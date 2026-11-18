@@ -1,0 +1,27 @@
+# Dependencies
+node_modules/
+
+# Build output
+dist/
+dist-ssr/
+
+# Local environment (contains project configuration, never commit)
+.env
+.env.*
+!.env.example
+*.local
+
+# Tooling caches and logs
+.vite/
+supabase/.temp/
+*.log
+.dev-server-*.log
+npm-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# Editor / OS
+.DS_Store
+.vscode/*
+!.vscode/extensions.json
+.idea/

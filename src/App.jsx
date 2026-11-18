@@ -15,6 +15,7 @@ import AdminTimetable from './pages/admin/AdminTimetable';
 import AdminReminders from './pages/admin/AdminReminders';
 import AdminAnnouncements from './pages/admin/AdminAnnouncements';
 import AdminData from './pages/admin/AdminData';
+import PwaUpdateBanner from './components/pwa/PwaUpdateBanner';
 import { useClassData } from './store/ClassDataContext';
 import { useReminderNotifications } from './hooks/useNotifications';
 
@@ -28,6 +29,7 @@ export default function App() {
   return (
     <>
       <NotificationBridge />
+      <PwaUpdateBanner />
       <Routes>
         <Route element={<AppLayout />}>
           <Route index element={<Dashboard />} />

@@ -13,6 +13,7 @@ import {
 import Brand from './Brand';
 import ThemeToggle from '../ui/ThemeToggle';
 import { IconButton } from '../ui/Button';
+import OfflineBanner from '../pwa/OfflineBanner';
 import { useAuth } from '../../store/AuthContext';
 import { cn } from '../../lib/utils';
 
@@ -113,6 +114,7 @@ export default function AdminLayout() {
         </header>
 
         <main className="mx-auto w-full max-w-6xl px-4 pb-28 pt-6 sm:px-6 lg:pb-14 lg:pt-10">
+          <OfflineBanner />
           <Outlet />
         </main>
       </div>

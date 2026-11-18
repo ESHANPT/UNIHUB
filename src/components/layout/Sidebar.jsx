@@ -1,16 +1,18 @@
 import { NavLink } from 'react-router-dom';
-import { Lock, ShieldCheck, Sparkles } from 'lucide-react';
+import { Download, Lock, ShieldCheck, Sparkles } from 'lucide-react';
 import { NAV_ITEMS } from './navItems';
 import Brand from './Brand';
 import ThemeToggle from '../ui/ThemeToggle';
 import { useClassData } from '../../store/ClassDataContext';
 import { useAuth } from '../../store/AuthContext';
+import { usePwa } from '../../store/PwaContext';
 import { splitDeadlinesByDate, splitReminders } from '../../lib/selectors';
 import { cn } from '../../lib/utils';
 
 export default function Sidebar() {
   const { data } = useClassData();
   const { isAdmin } = useAuth();
+  const { canInstall, installApp } = usePwa();
   const { upcoming } = splitDeadlinesByDate(data.deadlines);
   const reminders = splitReminders(data.reminders);
 
@@ -81,6 +83,20 @@ export default function Sidebar() {
       </nav>
 
       <div className="space-y-3 pt-4">
+        {canInstall ? (
+          <button
+            type="button"
+            onClick={installApp}
+            className="flex w-full items-center justify-between rounded-2xl border border-brand/30 bg-brand-soft/70 px-3 py-2.5 text-xs font-semibold text-brand-ink transition hover:bg-brand-soft"
+          >
+            <span className="flex items-center gap-2">
+              <Download className="h-4 w-4 text-brand" aria-hidden="true" />
+              <span>Install app</span>
+            </span>
+            <span className="rounded-lg bg-brand px-1.5 py-0.5 text-[10px] text-white">UniHub</span>
+          </button>
+        ) : null}
+
         <div className="flex items-center justify-between rounded-2xl border border-line bg-soft px-3 py-2.5">
           <div>
             <p className="text-xs font-semibold">Appearance</p>

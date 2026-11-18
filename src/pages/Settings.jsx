@@ -12,6 +12,7 @@ import {
 import { cn } from '../lib/utils';
 import PageHeader from '../components/ui/PageHeader';
 import Button from '../components/ui/Button';
+import PwaInstallCard from '../components/pwa/PwaInstallCard';
 
 const THEME_OPTIONS = [
   { value: 'light', label: 'Light', icon: Sun, hint: 'Bright and crisp' },
@@ -108,19 +109,21 @@ export default function Settings() {
             dashboard and reminders page.
           </p>
         </section>
-      </div>
 
-      <section className="card mt-5 p-5">
-        <h2 className="flex items-center gap-2 text-sm font-semibold">
-          <Info className="h-4 w-4 text-brand" aria-hidden="true" />
-          About this portal
-        </h2>
-        <p className="mt-2 max-w-2xl text-xs leading-relaxed text-muted">
-          This is the read-only student view. Deadlines, timetable entries, reminders and announcements are managed by
-          your class administrator and loaded from a shared Supabase database. There are no student accounts or
-          personal completion tracking in this version.
-        </p>
-      </section>
+        <PwaInstallCard />
+
+        <section className="card p-5">
+          <h2 className="flex items-center gap-2 text-sm font-semibold">
+            <Info className="h-4 w-4 text-brand" aria-hidden="true" />
+            About this portal
+          </h2>
+          <p className="mt-2 text-xs leading-relaxed text-muted">
+            This is the read-only student view. Deadlines, timetable entries, reminders and announcements are managed by
+            your class administrator and loaded from a shared Supabase database. There are no student accounts or
+            personal completion tracking in this version.
+          </p>
+        </section>
+      </div>
 
       <section className="card mt-5 flex flex-col gap-4 p-5 sm:flex-row sm:items-center sm:justify-between">
         <div className="flex items-start gap-3">

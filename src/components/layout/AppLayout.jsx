@@ -2,6 +2,7 @@ import { Outlet } from 'react-router-dom';
 import Sidebar from './Sidebar';
 import MobileHeader from './MobileHeader';
 import MobileNav from './MobileNav';
+import OfflineBanner from '../pwa/OfflineBanner';
 
 export default function AppLayout() {
   return (
@@ -17,6 +18,7 @@ export default function AppLayout() {
       <div className="lg:pl-72">
         <MobileHeader />
         <main className="mx-auto w-full max-w-6xl px-4 pb-28 pt-6 sm:px-6 lg:pb-14 lg:pt-10">
+          <OfflineBanner />
           <Outlet />
         </main>
       </div>

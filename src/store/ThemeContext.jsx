@@ -17,9 +17,11 @@ export function ThemeProvider({ children }) {
   useEffect(() => {
     const media = window.matchMedia('(prefers-color-scheme: dark)');
     const apply = () => {
-      const dark = theme === 'dark' || (theme === 'system' && media.matches);
-      document.documentElement.classList.toggle('dark', dark);
-      document.documentElement.style.colorScheme = dark ? 'dark' : 'light';
+      const isDark = theme === 'dark' || (theme === 'system' && media.matches);
+      const activeTheme = isDark ? 'dark' : 'light';
+      document.documentElement.setAttribute('data-theme', activeTheme);
+      document.documentElement.classList.toggle('dark', isDark);
+      document.documentElement.style.colorScheme = activeTheme;
     };
 
     apply();

@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { BellRing } from 'lucide-react';
 import { defaultReminderDate, parseDateTime, toDateTimeInput } from '../../lib/utils';
 import { Field, FormActions, FormError } from '../ui/Field';
+import { Input, Textarea } from '../ui/Input';
 
 export default function ReminderForm({ initial, onSubmit, onCancel, submitLabel = 'Save reminder' }) {
   const [values, setValues] = useState(() => ({
@@ -21,13 +22,13 @@ export default function ReminderForm({ initial, onSubmit, onCancel, submitLabel 
   const handleSubmit = (event) => {
     event.preventDefault();
     const nextErrors = {};
-    if (!values.title.trim()) nextErrors.title = 'Give this reminder a title.';
+    if (!values.title.trim()) nextErrors.title = 'Title is required.';
     if (!values.datetime) nextErrors.datetime = 'Choose when to be reminded.';
-    else if (!parseDateTime(values.datetime)) nextErrors.datetime = 'That date does not look valid.';
+    else if (!parseDateTime(values.datetime)) nextErrors.datetime = 'Invalid date format.';
 
     setErrors(nextErrors);
     if (Object.keys(nextErrors).length > 0) {
-      setFormError('Please fix the highlighted fields before saving.');
+      setFormError('Please check the required fields.');
       return;
     }
 
@@ -42,44 +43,41 @@ export default function ReminderForm({ initial, onSubmit, onCancel, submitLabel 
     <form className="space-y-4" onSubmit={handleSubmit} noValidate>
       <FormError>{formError}</FormError>
 
-      <Field label="Reminder" htmlFor="reminder-title" error={errors.title}>
-        <input
+      <Field label="Reminder title" htmlFor="reminder-title" error={errors.title}>
+        <Input
           id="reminder-title"
-          className="input"
-          placeholder="e.g. Finish the OS lab report"
+          placeholder="e.g. Bring lab notebook"
           value={values.title}
           onChange={update('title')}
-          aria-invalid={Boolean(errors.title)}
+          error={Boolean(errors.title)}
           autoFocus
         />
       </Field>
 
       <Field label="Date & time" htmlFor="reminder-datetime" error={errors.datetime}>
-        <input
+        <Input
           id="reminder-datetime"
           type="datetime-local"
-          className="input"
           value={values.datetime}
           onChange={update('datetime')}
-          aria-invalid={Boolean(errors.datetime)}
+          error={Boolean(errors.datetime)}
         />
       </Field>
 
-      <Field label="Notes" htmlFor="reminder-description" hint="Optional details to help future you.">
-        <textarea
+      <Field label="Notes" htmlFor="reminder-description" hint="Optional details for the class.">
+        <Textarea
           id="reminder-description"
-          className="input min-h-[76px] resize-y"
           rows={3}
-          placeholder="What exactly needs doing?"
+          placeholder="Specific details or materials needed…"
           value={values.description}
           onChange={update('description')}
         />
       </Field>
 
-      <p className="flex items-start gap-2 rounded-xl border border-line bg-soft px-3 py-2 text-xs leading-relaxed text-muted">
-        <BellRing className="mt-0.5 h-3.5 w-3.5 shrink-0 text-brand" aria-hidden="true" />
-        Browser notifications only appear while UniHub is open in a tab — they cannot run in the background.
-      </p>
+      <div className="flex items-start gap-2.5 rounded-md bg-surface-inset shadow-inset-1 border border-hairline/60 p-3 text-xs leading-relaxed text-text-3">
+        <BellRing className="mt-0.5 h-3.5 w-3.5 shrink-0 text-accent stroke-[1.5]" aria-hidden="true" />
+        <span>Browser notifications appear while UniHub is open in a tab.</span>
+      </div>
 
       <FormActions onCancel={onCancel} submitLabel={submitLabel} />
     </form>

@@ -10,14 +10,13 @@ export default function OfflineBanner() {
     <div
       role="status"
       aria-live="polite"
-      className="mb-5 flex items-center gap-3 rounded-2xl border border-amber-300/40 bg-amber-500/10 px-4 py-3 text-xs font-medium text-amber-900 dark:text-amber-200"
+      className="mb-5 flex items-center gap-3 rounded-md border-l-[3px] border-l-warning bg-surface p-3.5 text-xs text-text shadow-elev-1"
     >
-      <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg bg-amber-500/20 text-amber-700 dark:text-amber-300">
-        <WifiOff className="h-4 w-4" aria-hidden="true" />
+      <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-warning-soft text-warning">
+        <WifiOff className="h-3.5 w-3.5 stroke-[1.5]" aria-hidden="true" />
       </div>
-      <div className="flex-1">
-        <span className="font-semibold">You are currently offline.</span> Live class deadlines, timetable, and
-        announcements may not reflect recent updates until connection is restored.
+      <div className="flex-1 leading-relaxed text-text-2">
+        <span className="font-semibold text-text">Offline mode.</span> Cached data is shown. Changes will sync once your connection is restored.
       </div>
     </div>
   );

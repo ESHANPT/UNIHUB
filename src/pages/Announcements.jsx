@@ -5,7 +5,7 @@ import { sortAnnouncements } from '../lib/selectors';
 import { ANNOUNCEMENT_CATEGORIES } from '../lib/utils';
 import PageHeader from '../components/ui/PageHeader';
 import Button from '../components/ui/Button';
-import FilterChips from '../components/ui/FilterChips';
+import Segmented from '../components/ui/Segmented';
 import EmptyState from '../components/ui/EmptyState';
 import { ErrorBanner, PageSkeleton } from '../components/ui/DataStatus';
 import AnnouncementCard from '../components/announcements/AnnouncementCard';
@@ -19,18 +19,18 @@ export default function Announcements() {
 
   if (loading) {
     return (
-      <div className="animate-rise">
-        <PageHeader title="Class announcements" subtitle="The noticeboard for everything your class needs to know." />
+      <div>
+        <PageHeader title="Class announcements" subtitle="Important news, notices, and class updates." />
         <PageSkeleton />
       </div>
     );
   }
 
   return (
-    <div className="animate-rise">
+    <div className="space-y-6">
       <PageHeader
         title="Class announcements"
-        subtitle="Published by your class admin, updated live."
+        subtitle="Official notices published by your class administrator."
         actions={
           <Button variant="secondary" size="sm" icon={RefreshCw} onClick={refresh}>
             Refresh
@@ -40,9 +40,9 @@ export default function Announcements() {
 
       <ErrorBanner message={error} onRetry={refresh} />
 
-      <div className="mb-5">
-        <FilterChips
-          label="Filter announcements by category"
+      <div className="flex items-center overflow-x-auto pb-1">
+        <Segmented
+          ariaLabel="Filter announcements by category"
           value={filter}
           onChange={setFilter}
           options={[
@@ -59,22 +59,22 @@ export default function Announcements() {
       {visible.length === 0 ? (
         <EmptyState
           icon={Megaphone}
-          title={data.announcements.length === 0 ? 'The board is empty' : 'No notices in this category'}
+          title={data.announcements.length === 0 ? 'No announcements posted' : 'No notices in this category'}
           description={
             data.announcements.length === 0
-              ? 'No announcements have been published yet. Check back soon.'
-              : 'Try another category to see more notices.'
+              ? 'New announcements published by your administrator will appear here.'
+              : 'Try selecting another category to see active announcements.'
           }
           action={
             data.announcements.length === 0 ? null : (
-              <Button variant="secondary" onClick={() => setFilter('all')}>
+              <Button variant="secondary" size="sm" onClick={() => setFilter('all')}>
                 Show all notices
               </Button>
             )
           }
         />
       ) : (
-        <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
+        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
           {visible.map((announcement) => (
             <AnnouncementCard key={announcement.id} announcement={announcement} />
           ))}

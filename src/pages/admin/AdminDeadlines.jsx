@@ -72,8 +72,8 @@ export default function AdminDeadlines() {
 
   const visibleCount = groups.upcoming.length + groups.past.length;
   const sections = [
-    { key: 'upcoming', title: 'Upcoming', dot: 'bg-violet-500' },
-    { key: 'past', title: 'Past deadlines', dot: 'bg-slate-400' },
+    { key: 'upcoming', title: 'Upcoming', dot: 'bg-accent' },
+    { key: 'past', title: 'Past deadlines', dot: 'bg-text-3' },
   ].filter((section) => status === 'all' || status === section.key);
 
   const openCreate = () => {
@@ -104,7 +104,7 @@ export default function AdminDeadlines() {
   const handleToggle = async (deadline) => {
     try {
       await actions.setDeadlineStatus(deadline.id, deadline.completed ? 'pending' : 'completed');
-      notify(deadline.completed ? 'Deadline reopened.' : 'Deadline completed. 🎉', 'success');
+      notify(deadline.completed ? 'Deadline reopened.' : 'Deadline completed.', 'success');
     } catch (err) {
       notify(err.message, 'error');
     }
@@ -160,7 +160,7 @@ export default function AdminDeadlines() {
 
       <ErrorBanner message={error} onRetry={refresh} />
 
-      <div className="card mb-5 space-y-3 p-3 sm:p-4">
+      <div className="bg-surface rounded-lg shadow-elev-1 border border-hairline mb-5 space-y-3.5 p-4">
         <div className="flex flex-col gap-2 sm:flex-row sm:items-center">
           <SearchInput
             value={query}

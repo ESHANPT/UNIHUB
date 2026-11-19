@@ -8,6 +8,7 @@ import {
   toDateTimeInput,
 } from '../../lib/utils';
 import { Field, FormActions, FormError } from '../ui/Field';
+import { Input, Textarea, Select } from '../ui/Input';
 
 export default function DeadlineForm({ initial, subjects = [], onSubmit, onCancel, submitLabel = 'Save deadline' }) {
   const [values, setValues] = useState(() => ({
@@ -30,14 +31,14 @@ export default function DeadlineForm({ initial, subjects = [], onSubmit, onCance
   const handleSubmit = (event) => {
     event.preventDefault();
     const nextErrors = {};
-    if (!values.title.trim()) nextErrors.title = 'Give this deadline a title.';
-    if (!values.subject.trim()) nextErrors.subject = 'Which subject is this for?';
-    if (!values.dueDate) nextErrors.dueDate = 'Choose a due date and time.';
-    else if (!parseDateTime(values.dueDate)) nextErrors.dueDate = 'That date does not look valid.';
+    if (!values.title.trim()) nextErrors.title = 'Title is required.';
+    if (!values.subject.trim()) nextErrors.subject = 'Subject is required.';
+    if (!values.dueDate) nextErrors.dueDate = 'Due date is required.';
+    else if (!parseDateTime(values.dueDate)) nextErrors.dueDate = 'Invalid date format.';
 
     setErrors(nextErrors);
     if (Object.keys(nextErrors).length > 0) {
-      setFormError('Please fix the highlighted fields before saving.');
+      setFormError('Please check the required fields.');
       return;
     }
 
@@ -56,27 +57,25 @@ export default function DeadlineForm({ initial, subjects = [], onSubmit, onCance
       <FormError>{formError}</FormError>
 
       <Field label="Title" htmlFor="deadline-title" error={errors.title}>
-        <input
+        <Input
           id="deadline-title"
-          className="input"
-          placeholder="e.g. Binary search tree assignment"
+          placeholder="e.g. Distributed Systems coursework"
           value={values.title}
           onChange={update('title')}
-          aria-invalid={Boolean(errors.title)}
+          error={Boolean(errors.title)}
           autoFocus
         />
       </Field>
 
       <div className="grid gap-4 sm:grid-cols-2">
         <Field label="Subject" htmlFor="deadline-subject" error={errors.subject}>
-          <input
+          <Input
             id="deadline-subject"
-            className="input"
             list="deadline-subjects"
-            placeholder="e.g. Data Structures"
+            placeholder="e.g. Computer Science"
             value={values.subject}
             onChange={update('subject')}
-            aria-invalid={Boolean(errors.subject)}
+            error={Boolean(errors.subject)}
           />
           <datalist id="deadline-subjects">
             {subjects.map((subject) => (
@@ -86,62 +85,65 @@ export default function DeadlineForm({ initial, subjects = [], onSubmit, onCance
         </Field>
 
         <Field label="Category" htmlFor="deadline-category">
-          <select id="deadline-category" className="input select" value={values.category} onChange={update('category')}>
+          <Select id="deadline-category" value={values.category} onChange={update('category')}>
             {DEADLINE_CATEGORIES.map((category) => (
               <option key={category} value={category}>
                 {category}
               </option>
             ))}
-          </select>
+          </Select>
         </Field>
       </div>
 
       <div className="grid gap-4 sm:grid-cols-2">
         <Field label="Due date & time" htmlFor="deadline-due" error={errors.dueDate}>
-          <input
+          <Input
             id="deadline-due"
             type="datetime-local"
-            className="input"
             value={values.dueDate}
             onChange={update('dueDate')}
-            aria-invalid={Boolean(errors.dueDate)}
+            error={Boolean(errors.dueDate)}
           />
         </Field>
 
         <Field label="Priority">
-          <div className="grid grid-cols-3 gap-1 rounded-xl border border-line bg-soft p-1">
-            {PRIORITIES.map((priority) => (
-              <button
-                key={priority}
-                type="button"
-                aria-pressed={values.priority === priority}
-                onClick={() => setValues((current) => ({ ...current, priority }))}
-                className={cn(
-                  'rounded-lg px-2 py-2 text-xs font-semibold transition',
-                  values.priority === priority
-                    ? 'bg-surface text-ink shadow-sm ring-1 ring-line'
-                    : 'text-muted hover:text-ink',
-                )}
-              >
-                <span
+          <div className="grid grid-cols-3 gap-1 rounded-md bg-surface-inset shadow-inset-1 border border-hairline/60 p-1">
+            {PRIORITIES.map((priority) => {
+              const active = values.priority === priority;
+              const dotColor =
+                priority === 'High'
+                  ? 'bg-danger'
+                  : priority === 'Medium'
+                    ? 'bg-warning'
+                    : 'bg-success';
+
+              return (
+                <button
+                  key={priority}
+                  type="button"
+                  aria-pressed={active}
+                  onClick={() => setValues((current) => ({ ...current, priority }))}
                   className={cn(
-                    'mr-1.5 inline-block h-1.5 w-1.5 rounded-full align-middle',
-                    priority === 'High' ? 'bg-rose-500' : priority === 'Medium' ? 'bg-amber-500' : 'bg-emerald-500',
+                    'flex items-center justify-center gap-1.5 rounded-[9px] py-1.5 text-xs font-medium transition-all duration-fast select-none cursor-pointer',
+                    active
+                      ? 'bg-surface text-text shadow-elev-1 border border-hairline'
+                      : 'text-text-3 hover:text-text'
                   )}
-                />
-                {priority}
-              </button>
-            ))}
+                >
+                  <span className={cn('h-1.5 w-1.5 rounded-full', dotColor)} />
+                  <span>{priority}</span>
+                </button>
+              );
+            })}
           </div>
         </Field>
       </div>
 
-      <Field label="Description" htmlFor="deadline-description" hint="Optional — add what needs to be submitted.">
-        <textarea
+      <Field label="Description" htmlFor="deadline-description" hint="Optional notes or checklist for students.">
+        <Textarea
           id="deadline-description"
-          className="input min-h-[84px] resize-y"
           rows={3}
-          placeholder="Add notes, requirements or a checklist…"
+          placeholder="Submission details or syllabus notes…"
           value={values.description}
           onChange={update('description')}
         />

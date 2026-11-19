@@ -1,59 +1,71 @@
 import { Clock } from 'lucide-react';
-import { cn, getCountdown } from '../../lib/utils';
+import { cn, getCountdown, subjectColor } from '../../lib/utils';
 
-export function Badge({ tone = 'slate', children, className }) {
-  return <span className={cn('badge', `tone-${tone}`, className)}>{children}</span>;
+const TONES = {
+  neutral: 'bg-surface-2 text-text-2 border border-hairline',
+  slate: 'bg-surface-2 text-text-2 border border-hairline',
+  accent: 'bg-accent-soft text-accent border border-accent-line/30',
+  success: 'bg-success-soft text-success border border-success/30',
+  warning: 'bg-warning-soft text-warning border border-warning/30',
+  danger: 'bg-danger-soft text-danger border border-danger/30',
+  info: 'bg-info-soft text-info border border-info/30',
+};
+
+const DOTS = {
+  neutral: 'bg-text-3',
+  slate: 'bg-text-3',
+  accent: 'bg-accent',
+  success: 'bg-success',
+  warning: 'bg-warning',
+  danger: 'bg-danger',
+  info: 'bg-info',
+};
+
+export function Badge({ tone = 'neutral', dot = false, children, className }) {
+  const toneKey = TONES[tone] ? tone : 'neutral';
+  return (
+    <span
+      className={cn(
+        'inline-flex items-center gap-1.5 h-6 px-2.5 rounded-full text-xs font-medium tracking-tight select-none shadow-elev-1',
+        TONES[toneKey],
+        className
+      )}
+    >
+      {dot && <span className={cn('h-1.5 w-1.5 rounded-full shrink-0', DOTS[toneKey])} aria-hidden="true" />}
+      {children}
+    </span>
+  );
 }
 
-const PRIORITY_TONES = {
-  High: 'rose',
-  Medium: 'amber',
-  Low: 'emerald',
-};
-
-const PRIORITY_DOTS = {
-  High: 'bg-rose-500',
-  Medium: 'bg-amber-500',
-  Low: 'bg-emerald-500',
-};
-
 export function PriorityBadge({ priority, className }) {
+  const config = {
+    High: { tone: 'danger', label: 'High' },
+    Medium: { tone: 'warning', label: 'Medium' },
+    Low: { tone: 'success', label: 'Low' },
+  }[priority] || { tone: 'neutral', label: priority };
+
   return (
-    <Badge tone={PRIORITY_TONES[priority] ?? 'slate'} className={className}>
-      <span className={cn('h-1.5 w-1.5 rounded-full', PRIORITY_DOTS[priority] ?? 'bg-slate-400')} />
-      {priority}
+    <Badge tone={config.tone} dot className={className}>
+      {config.label}
     </Badge>
   );
 }
 
-const CATEGORY_TONES = {
-  Assignment: 'sky',
-  Quiz: 'violet',
-  Exam: 'rose',
-  Project: 'amber',
-  Other: 'slate',
-  General: 'slate',
-  Academic: 'sky',
-  Important: 'rose',
-  Event: 'violet',
-};
-
-const CATEGORY_DOTS = {
-  Assignment: 'bg-sky-500',
-  Quiz: 'bg-violet-500',
-  Exam: 'bg-rose-500',
-  Project: 'bg-amber-500',
-  Other: 'bg-slate-400',
-  General: 'bg-slate-400',
-  Academic: 'bg-sky-500',
-  Important: 'bg-rose-500',
-  Event: 'bg-violet-500',
-};
-
 export function CategoryBadge({ category, dot = true, className }) {
+  const config = {
+    Assignment: { tone: 'info' },
+    Quiz: { tone: 'accent' },
+    Exam: { tone: 'danger' },
+    Project: { tone: 'warning' },
+    Other: { tone: 'neutral' },
+    General: { tone: 'neutral' },
+    Academic: { tone: 'info' },
+    Important: { tone: 'danger' },
+    Event: { tone: 'accent' },
+  }[category] || { tone: 'neutral' };
+
   return (
-    <Badge tone={CATEGORY_TONES[category] ?? 'slate'} className={className}>
-      {dot ? <span className={cn('h-1.5 w-1.5 rounded-full', CATEGORY_DOTS[category] ?? 'bg-slate-400')} /> : null}
+    <Badge tone={config.tone} dot={dot} className={className}>
       {category}
     </Badge>
   );
@@ -62,27 +74,36 @@ export function CategoryBadge({ category, dot = true, className }) {
 export function CountdownBadge({ value, now, className }) {
   const countdown = getCountdown(value, now);
   if (!countdown) return null;
-  const tone = countdown.overdue ? 'rose' : countdown.urgent ? 'amber' : 'slate';
+  const tone = countdown.overdue ? 'danger' : countdown.urgent ? 'warning' : 'neutral';
+
   return (
-    <Badge tone={tone} className={className}>
-      <Clock className="h-3 w-3" aria-hidden="true" />
-      {countdown.label}
+    <Badge tone={tone} className={cn('tabular-nums', className)}>
+      <Clock className="h-3 w-3 stroke-[1.5]" aria-hidden="true" />
+      <span>{countdown.label}</span>
     </Badge>
   );
 }
 
 export function SubjectChip({ subject, className }) {
+  const dotColor = subjectColor(subject);
+
   return (
     <span
       className={cn(
-        'inline-flex max-w-[11rem] items-center gap-1.5 truncate rounded-full px-2 py-0.5 text-[0.6875rem] font-semibold',
-        'bg-soft text-muted ring-1 ring-line',
-        className,
+        'inline-flex max-w-[12rem] items-center gap-1.5 truncate rounded-full h-6 px-2.5 text-xs font-medium',
+        'bg-surface-2 text-text-2 border border-hairline shadow-elev-1',
+        className
       )}
       title={subject}
     >
-      <span className="h-1.5 w-1.5 shrink-0 rounded-full bg-brand" />
+      <span
+        className="h-1.5 w-1.5 shrink-0 rounded-full"
+        style={{ backgroundColor: dotColor }}
+        aria-hidden="true"
+      />
       <span className="truncate">{subject}</span>
     </span>
   );
 }
+
+export default Badge;

@@ -13,9 +13,9 @@ export default defineConfig({
       manifest: {
         name: 'UniHub',
         short_name: 'UniHub',
-        description: 'Class hub for university deadlines, timetable, reminders and announcements.',
-        theme_color: '#6a4cff',
-        background_color: '#f4f3fb',
+        description: 'Student dashboard for deadlines, timetable, reminders, and class announcements.',
+        theme_color: '#131416',
+        background_color: '#131416',
         display: 'standalone',
         orientation: 'any',
         scope: '/',

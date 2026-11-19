@@ -1,11 +1,13 @@
 import { useMemo } from 'react';
 import { Link } from 'react-router-dom';
+import { motion } from 'motion/react';
 import {
   ArrowRight,
   BellRing,
   CalendarClock,
   CalendarDays,
   CheckCircle2,
+  Clock,
   MapPin,
   Megaphone,
   Radio,
@@ -20,33 +22,129 @@ import {
   formatLongDate,
   formatTime12,
   greeting,
+  parseDateTime,
   subjectColor,
   todayName,
 } from '../lib/utils';
 import { CategoryBadge, CountdownBadge, PriorityBadge, SubjectChip } from '../components/ui/Badge';
-import StatCard from '../components/ui/StatCard';
 import { ErrorBanner, PageSkeleton } from '../components/ui/DataStatus';
 
-function SectionCard({ title, icon: Icon, to, linkLabel = 'View all', children }) {
-  return (
-    <section className="card p-4 sm:p-5">
-      <div className="mb-3 flex items-center justify-between gap-3">
-        <h2 className="flex items-center gap-2 text-sm font-semibold">
-          <Icon className="h-4 w-4 text-brand" aria-hidden="true" />
-          {title}
-        </h2>
-        {to ? (
-          <Link
-            to={to}
-            className="inline-flex items-center gap-1 text-xs font-semibold text-brand-ink transition hover:underline"
-          >
-            {linkLabel}
-            <ArrowRight className="h-3 w-3" aria-hidden="true" />
-          </Link>
-        ) : null}
+// Animation variants for the single orchestrated page-load moment (DESIGN.md §5.2)
+const containerVariants = {
+  hidden: { opacity: 0 },
+  visible: {
+    opacity: 1,
+    transition: {
+      duration: 0.5,
+      ease: [0.22, 1, 0.36, 1],
+      staggerChildren: 0.06,
+      delayChildren: 0.1,
+    },
+  },
+};
+
+const itemVariants = {
+  hidden: { opacity: 0, y: 8 },
+  visible: {
+    opacity: 1,
+    y: 0,
+    transition: {
+      duration: 0.4,
+      ease: [0.22, 1, 0.36, 1],
+    },
+  },
+};
+
+function NextDeadlineHeroCard({ deadline, now }) {
+  if (!deadline) {
+    return (
+      <div className="rounded-lg bg-surface-inset shadow-inset-1 border border-hairline/60 p-5 flex flex-col justify-between">
+        <div>
+          <span className="text-[11px] font-medium text-text-3">Next deadline</span>
+          <p className="mt-2 text-base font-serif text-text">No pending deadlines</p>
+          <p className="mt-1 text-xs text-text-3 leading-relaxed">
+            All coursework is caught up. New deadlines published by your administrator will appear here.
+          </p>
+        </div>
+        <div className="mt-4 flex items-center gap-2 text-xs text-success font-medium">
+          <CheckCircle2 className="h-4 w-4 stroke-[1.5]" aria-hidden="true" />
+          <span>All submissions up to date</span>
+        </div>
       </div>
-      {children}
-    </section>
+    );
+  }
+
+  const dueDate = parseDateTime(deadline.dueDate);
+  const diffHours = dueDate ? Math.max(0, Math.round((dueDate.getTime() - now) / (1000 * 60 * 60))) : 0;
+  // Progress arc: max 7 days = 168h
+  const progressRatio = Math.max(0, Math.min(1, 1 - diffHours / 168));
+  const strokeDashoffset = 120 - 120 * progressRatio;
+
+  return (
+    <div className="rounded-lg bg-surface-inset shadow-inset-1 border border-hairline/60 p-5 flex flex-col justify-between">
+      <div>
+        <div className="flex items-center justify-between gap-2">
+          <span className="text-[11px] font-medium text-text-3">Priority deadline</span>
+          <PriorityBadge priority={deadline.priority} />
+        </div>
+
+        <h3 className="mt-2 text-lg font-serif text-text tracking-tight break-words">
+          {deadline.title}
+        </h3>
+
+        <div className="mt-2 flex flex-wrap items-center gap-2">
+          <SubjectChip subject={deadline.subject} />
+          <CategoryBadge category={deadline.category} dot={false} />
+        </div>
+      </div>
+
+      <div className="mt-5 pt-4 border-t border-hairline flex items-center justify-between gap-4">
+        <div className="flex items-center gap-3">
+          {/* Subtle brass countdown progress arc */}
+          <div className="relative w-10 h-10 shrink-0">
+            <svg className="w-10 h-10 -rotate-90" viewBox="0 0 44 44">
+              <circle
+                cx="22"
+                cy="22"
+                r="19"
+                className="stroke-hairline fill-none"
+                strokeWidth="2.5"
+              />
+              <motion.circle
+                cx="22"
+                cy="22"
+                r="19"
+                className="stroke-accent fill-none"
+                strokeWidth="2.5"
+                strokeDasharray="120"
+                strokeLinecap="round"
+                initial={{ strokeDashoffset: 120 }}
+                animate={{ strokeDashoffset }}
+                transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
+              />
+            </svg>
+            <div className="absolute inset-0 flex items-center justify-center text-accent">
+              <Clock className="w-4 h-4 stroke-[1.5]" aria-hidden="true" />
+            </div>
+          </div>
+
+          <div>
+            <CountdownBadge value={deadline.dueDate} now={now} />
+            <p className="mt-0.5 text-[11px] text-text-3 tabular-nums">
+              Due {formatDate(deadline.dueDate, { short: true })}
+            </p>
+          </div>
+        </div>
+
+        <Link
+          to="/deadlines"
+          className="inline-flex items-center gap-1 text-xs font-medium text-accent hover:underline"
+        >
+          <span>View details</span>
+          <ArrowRight className="h-3 w-3 stroke-[1.5]" aria-hidden="true" />
+        </Link>
+      </div>
+    </div>
   );
 }
 
@@ -62,158 +160,176 @@ export default function Dashboard() {
 
   const pendingReminders = reminders.overdue.length + reminders.dueToday.length + reminders.upcoming.length;
   const nextDeadline = upcoming[0];
-  const firstClass = todayClasses[0];
   const todayIndex = (new Date(now).getDay() + 6) % 7;
 
   if (loading) {
-    return (
-      <div className="animate-rise">
-        <PageSkeleton />
-      </div>
-    );
+    return <PageSkeleton />;
   }
 
   return (
-    <div className="animate-rise space-y-6">
+    <motion.div
+      variants={containerVariants}
+      initial="hidden"
+      animate="visible"
+      className="space-y-6"
+    >
       <ErrorBanner message={error} onRetry={refresh} />
 
-      <section className="hero-surface card relative overflow-hidden p-6 sm:p-8">
-        <div
-          className="pointer-events-none absolute -right-12 -top-20 h-52 w-52 rounded-full bg-brand opacity-25 blur-3xl"
-          aria-hidden="true"
-        />
-        <div className="relative flex flex-col gap-6 sm:flex-row sm:items-center sm:justify-between">
-          <div className="max-w-xl">
-            <div className="flex flex-wrap items-center gap-3 text-[11px] font-bold uppercase tracking-[0.18em] text-muted">
-              <span className="inline-flex items-center gap-1.5 text-brand-ink">
-                <Radio className="h-3.5 w-3.5" aria-hidden="true" />
-                Live class view
+      {/* The Hero (DESIGN.md §1 & §7) — Spend boldness here */}
+      <motion.section
+        variants={itemVariants}
+        className="relative bg-surface rounded-xl shadow-elev-3 border border-hairline p-6 sm:p-8 overflow-hidden"
+      >
+        <div className="flex flex-col gap-6 lg:flex-row lg:items-start lg:justify-between">
+          <div className="flex-1 max-w-2xl">
+            <div className="flex items-center gap-2.5 text-xs font-medium text-text-3">
+              <span className="inline-flex items-center gap-1.5 text-accent">
+                <Radio className="h-3.5 w-3.5 stroke-[1.5]" aria-hidden="true" />
+                Live class feed
               </span>
-              <span className="hidden h-1 w-1 rounded-full bg-line sm:block" aria-hidden="true" />
-              <span>{formatLongDate(new Date(now))}</span>
+              <span className="h-1 w-1 rounded-full bg-hairline" aria-hidden="true" />
+              <span className="tabular-nums">{formatLongDate(new Date(now))}</span>
             </div>
-            <h1 className="mt-3 text-2xl font-bold tracking-tight sm:text-[1.75rem]">
-              {greeting(new Date(now))}, scholar <span aria-hidden="true">👋</span>
+
+            <h1 className="mt-2 text-3xl sm:text-4xl font-serif text-text tracking-tight">
+              {greeting(new Date(now))}, scholar
             </h1>
-            <p className="mt-2 max-w-md text-sm leading-relaxed text-muted">
+
+            <p className="mt-2 text-sm text-text-2 leading-relaxed">
               {upcoming.length === 0
-                ? 'No deadlines on the radar right now. A rare and beautiful thing.'
+                ? 'No deadlines scheduled right now.'
                 : `You have ${upcoming.length} upcoming deadline${upcoming.length === 1 ? '' : 's'} and ${todayClasses.length} class${todayClasses.length === 1 ? '' : 'es'} today.`}
             </p>
-            <p className="mt-3 inline-flex items-center gap-1.5 rounded-full border border-line bg-surface/70 px-3 py-1 text-[11px] font-medium text-muted">
-              <Sparkles className="h-3 w-3 text-brand" aria-hidden="true" />
-              Read-only · updates automatically when your class admin publishes changes
-            </p>
+
+            <div className="mt-4 flex items-center gap-2 text-[11px] text-text-3">
+              <Sparkles className="h-3.5 w-3.5 text-accent stroke-[1.5]" aria-hidden="true" />
+              <span>Read-only view · Syncs automatically with class updates</span>
+            </div>
           </div>
 
-          <div className="flex shrink-0 items-center gap-4 rounded-2xl border border-line bg-surface/70 px-5 py-4 backdrop-blur">
+          {/* Date pill with tabular numbers */}
+          <div className="flex shrink-0 items-center gap-4 rounded-lg bg-surface-inset shadow-inset-1 border border-hairline/60 px-5 py-4 self-start">
             <div className="text-center">
-              <p className="text-[10px] font-bold uppercase tracking-widest text-muted">
+              <p className="text-[10px] font-medium text-text-3">
                 {new Date(now).toLocaleDateString(undefined, { month: 'short' })}
               </p>
-              <p className="text-3xl font-bold leading-tight">{new Date(now).getDate()}</p>
-              <p className="text-[10px] font-semibold uppercase text-muted">{DAYS_SHORT[todayIndex]}</p>
+              <p className="text-3xl font-serif font-bold text-text tabular-nums leading-none mt-1">
+                {new Date(now).getDate()}
+              </p>
+              <p className="text-[10px] font-medium text-text-3 mt-1">{DAYS_SHORT[todayIndex]}</p>
             </div>
-            <div className="h-12 w-px bg-line" aria-hidden="true" />
-            <div className="space-y-1 text-xs">
-              <p className="font-semibold">{todayClasses.length} classes today</p>
-              <p className="text-muted">{pendingReminders} class reminders</p>
-              <p className="text-muted">{announcements.length} recent notices</p>
+            <div className="h-10 w-px bg-hairline" aria-hidden="true" />
+            <div className="space-y-1 text-xs tabular-nums text-text-2">
+              <p className="font-medium text-text">{todayClasses.length} classes today</p>
+              <p className="text-text-3">{upcoming.length} active deadlines</p>
+              <p className="text-text-3">{pendingReminders} reminders</p>
             </div>
           </div>
         </div>
-      </section>
 
-      <div className="grid gap-3 sm:grid-cols-3">
-        <StatCard
-          label="Upcoming deadlines"
-          value={upcoming.length}
-          hint={nextDeadline ? `Next: ${nextDeadline.title}` : 'Nothing scheduled'}
-          icon={CalendarClock}
-          tone="brand"
-        />
-        <StatCard
-          label="Classes today"
-          value={todayClasses.length}
-          hint={firstClass ? `${formatTime12(firstClass.startTime)} · ${firstClass.subject}` : 'No classes — free day'}
-          icon={CalendarDays}
-          tone="sky"
-        />
-        <StatCard
-          label="Class reminders"
-          value={pendingReminders}
-          hint={reminders.dueToday.length > 0 ? `${reminders.dueToday.length} due today` : 'Shared with the class'}
-          icon={BellRing}
-          tone="amber"
-        />
-      </div>
+        {/* Hero split modules: Next Deadline Focal Card & Today's classes timeline */}
+        <div className="mt-7 grid gap-5 lg:grid-cols-2">
+          {/* Next deadline focal element */}
+          <NextDeadlineHeroCard deadline={nextDeadline} now={now} />
 
-      <div className="grid gap-6 lg:grid-cols-3">
-        <div className="space-y-6 lg:col-span-2">
-          <SectionCard title="Today's timetable" icon={CalendarDays} to="/timetable" linkLabel="Full week">
+          {/* Today's classes timeline */}
+          <div className="rounded-lg bg-surface-inset shadow-inset-1 border border-hairline/60 p-5 flex flex-col justify-between">
+            <div className="flex items-center justify-between gap-2 mb-3">
+              <span className="text-[11px] font-medium text-text-3">Today's classes</span>
+              <Link
+                to="/timetable"
+                className="inline-flex items-center gap-1 text-xs font-medium text-accent hover:underline"
+              >
+                <span>Full timetable</span>
+                <ArrowRight className="h-3 w-3 stroke-[1.5]" aria-hidden="true" />
+              </Link>
+            </div>
+
             {todayClasses.length === 0 ? (
-              <div className="rounded-xl border border-dashed border-line bg-soft/60 px-4 py-6 text-center">
-                <p className="text-sm font-semibold">No classes today 🎉</p>
-                <p className="mt-1 text-xs text-muted">Use the time to get ahead, or check the rest of your week.</p>
+              <div className="py-6 text-center">
+                <p className="text-sm font-medium text-text">No classes scheduled today</p>
+                <p className="mt-1 text-xs text-text-3">Take the day to study or view the rest of your week.</p>
               </div>
             ) : (
-              <ul className="space-y-2">
-                {todayClasses.map((entry) => (
-                  <li
+              <div className="space-y-2.5">
+                {todayClasses.slice(0, 3).map((entry) => (
+                  <div
                     key={entry.id}
-                    className="flex items-center gap-3 rounded-xl border border-line/80 bg-soft/50 px-3 py-2.5"
+                    className="flex items-center gap-3 rounded-md bg-surface shadow-elev-1 border border-hairline p-2.5"
                   >
-                    <div className="w-[4.5rem] shrink-0">
-                      <p className="text-xs font-bold">{formatTime12(entry.startTime)}</p>
-                      <p className="text-[10px] text-muted">{formatTime12(entry.endTime)}</p>
+                    <div className="w-16 shrink-0 text-right tabular-nums">
+                      <p className="text-xs font-medium text-text">{formatTime12(entry.startTime)}</p>
+                      <p className="text-[10px] text-text-3">{formatTime12(entry.endTime)}</p>
                     </div>
+                    {/* Course color 3px vertical edge per DESIGN.md §7 */}
                     <span
-                      className="h-9 w-1 shrink-0 rounded-full"
+                      className="h-8 w-[3px] shrink-0 rounded-full"
                       style={{ backgroundColor: subjectColor(entry.subject) }}
                       aria-hidden="true"
                     />
                     <div className="min-w-0 flex-1">
-                      <p className="truncate text-sm font-semibold">{entry.subject}</p>
-                      <p className="flex items-center gap-1 truncate text-[11px] text-muted">
-                        <MapPin className="h-3 w-3 shrink-0" aria-hidden="true" />
-                        {entry.location || 'Location TBC'}
-                        {entry.lecturer ? ` · ${entry.lecturer}` : ''}
+                      <p className="truncate text-xs font-semibold text-text">{entry.subject}</p>
+                      <p className="flex items-center gap-1 truncate text-[11px] text-text-3 mt-0.5">
+                        <MapPin className="h-3 w-3 shrink-0 stroke-[1.5]" aria-hidden="true" />
+                        <span>{entry.location || 'Location to be confirmed'}</span>
+                        {entry.lecturer && <span>· {entry.lecturer}</span>}
                       </p>
                     </div>
-                  </li>
+                  </div>
                 ))}
-              </ul>
+              </div>
             )}
-          </SectionCard>
+          </div>
+        </div>
+      </motion.section>
 
-          <SectionCard title="Upcoming deadlines" icon={CalendarClock} to="/deadlines">
+      {/* Asymmetric modules below (DESIGN.md §7: 7/5 or asymmetric columns) */}
+      <motion.div variants={itemVariants} className="grid gap-6 lg:grid-cols-12">
+        {/* Left Column (7 cols): Upcoming Deadlines list */}
+        <div className="lg:col-span-7 space-y-6">
+          <section className="bg-surface rounded-lg shadow-elev-2 border border-transparent p-5 sm:p-6">
+            <div className="flex items-center justify-between gap-3 mb-4">
+              <h2 className="flex items-center gap-2 text-sm font-semibold text-text">
+                <CalendarClock className="h-4 w-4 text-accent stroke-[1.5]" aria-hidden="true" />
+                <span>Upcoming deadlines</span>
+              </h2>
+              <Link
+                to="/deadlines"
+                className="inline-flex items-center gap-1 text-xs font-medium text-accent hover:underline"
+              >
+                <span>View all</span>
+                <ArrowRight className="h-3 w-3 stroke-[1.5]" aria-hidden="true" />
+              </Link>
+            </div>
+
             {upcoming.length === 0 ? (
-              <div className="rounded-xl border border-dashed border-line bg-soft/60 px-4 py-6 text-center">
-                <p className="flex items-center justify-center gap-2 text-sm font-semibold">
-                  <CheckCircle2 className="h-4 w-4 text-emerald-500" aria-hidden="true" />
-                  You're all caught up
-                </p>
-                <p className="mt-1 text-xs text-muted">New deadlines will appear here as your admin adds them.</p>
+              <div className="rounded-md bg-surface-inset shadow-inset-1 border border-hairline/60 p-6 text-center">
+                <CheckCircle2 className="mx-auto h-5 w-5 text-success stroke-[1.5]" aria-hidden="true" />
+                <p className="mt-2 text-sm font-medium text-text">All deadlines complete</p>
+                <p className="mt-1 text-xs text-text-3">New deadlines will appear as your administrator posts them.</p>
               </div>
             ) : (
-              <ul className="space-y-1">
-                {upcoming.slice(0, 4).map((deadline) => (
+              <ul className="divide-y divide-hairline">
+                {upcoming.slice(0, 5).map((deadline) => (
                   <li key={deadline.id}>
                     <Link
                       to="/deadlines"
-                      className="flex items-center gap-3 rounded-xl px-2 py-2.5 transition hover:bg-soft"
+                      className="flex items-center gap-3.5 py-3 px-2 rounded-md transition-colors duration-fast hover:bg-surface-inset/60 group"
                     >
+                      {/* Course colour indicator line */}
                       <span
-                        className="h-9 w-1 shrink-0 rounded-full"
+                        className="h-8 w-[3px] shrink-0 rounded-full"
                         style={{ backgroundColor: subjectColor(deadline.subject) }}
                         aria-hidden="true"
                       />
                       <div className="min-w-0 flex-1">
-                        <p className="truncate text-sm font-medium">{deadline.title}</p>
-                        <p className="mt-0.5 flex flex-wrap items-center gap-1.5 text-[11px] text-muted">
+                        <p className="truncate text-sm font-medium text-text group-hover:text-accent transition-colors">
+                          {deadline.title}
+                        </p>
+                        <div className="mt-1 flex flex-wrap items-center gap-1.5">
                           <SubjectChip subject={deadline.subject} />
                           <PriorityBadge priority={deadline.priority} />
-                        </p>
+                        </div>
                       </div>
                       <CountdownBadge value={deadline.dueDate} now={now} className="shrink-0" />
                     </Link>
@@ -221,59 +337,99 @@ export default function Dashboard() {
                 ))}
               </ul>
             )}
-          </SectionCard>
+          </section>
         </div>
 
-        <div className="space-y-6">
-          <SectionCard title="Class reminders" icon={BellRing} to="/reminders">
-            {reminders.overdue.length + reminders.dueToday.length + reminders.upcoming.length === 0 ? (
-              <div className="rounded-xl border border-dashed border-line bg-soft/60 px-4 py-6 text-center">
-                <p className="text-sm font-semibold">Nothing posted yet</p>
-                <p className="mt-1 text-xs text-muted">Class-wide reminders will show up here.</p>
+        {/* Right Column (5 cols): Reminders & Announcements */}
+        <div className="lg:col-span-5 space-y-6">
+          {/* Class Reminders */}
+          <section className="bg-surface rounded-lg shadow-elev-2 border border-transparent p-5 sm:p-6">
+            <div className="flex items-center justify-between gap-3 mb-4">
+              <h2 className="flex items-center gap-2 text-sm font-semibold text-text">
+                <BellRing className="h-4 w-4 text-accent stroke-[1.5]" aria-hidden="true" />
+                <span>Class reminders</span>
+              </h2>
+              <Link
+                to="/reminders"
+                className="inline-flex items-center gap-1 text-xs font-medium text-accent hover:underline"
+              >
+                <span>View all</span>
+                <ArrowRight className="h-3 w-3 stroke-[1.5]" aria-hidden="true" />
+              </Link>
+            </div>
+
+            {pendingReminders === 0 ? (
+              <div className="rounded-md bg-surface-inset shadow-inset-1 border border-hairline/60 p-5 text-center">
+                <p className="text-xs text-text-3">No active reminders posted.</p>
               </div>
             ) : (
-              <ul className="space-y-1">
+              <ul className="space-y-2">
                 {[...reminders.overdue, ...reminders.dueToday, ...reminders.upcoming]
-                  .slice(0, 4)
+                  .slice(0, 3)
                   .map((reminder) => (
-                    <li key={reminder.id} className="rounded-xl px-2 py-2 transition hover:bg-soft">
-                      <p className="text-xs font-medium leading-snug">{reminder.title}</p>
-                      <CountdownBadge value={reminder.datetime} now={now} className="mt-1" />
+                    <li
+                      key={reminder.id}
+                      className="rounded-md bg-surface-inset shadow-inset-1 border border-hairline/60 p-3"
+                    >
+                      <p className="text-xs font-medium text-text leading-snug break-words">
+                        {reminder.title}
+                      </p>
+                      <div className="mt-2 flex items-center justify-between">
+                        <CountdownBadge value={reminder.datetime} now={now} />
+                        <span className="text-[10px] text-text-3 tabular-nums">
+                          {formatDate(reminder.datetime, { short: true })}
+                        </span>
+                      </div>
                     </li>
                   ))}
               </ul>
             )}
-          </SectionCard>
+          </section>
 
-          <SectionCard title="Recent announcements" icon={Megaphone} to="/announcements" linkLabel="Board">
+          {/* Recent Announcements */}
+          <section className="bg-surface rounded-lg shadow-elev-2 border border-transparent p-5 sm:p-6">
+            <div className="flex items-center justify-between gap-3 mb-4">
+              <h2 className="flex items-center gap-2 text-sm font-semibold text-text">
+                <Megaphone className="h-4 w-4 text-accent stroke-[1.5]" aria-hidden="true" />
+                <span>Noticeboard</span>
+              </h2>
+              <Link
+                to="/announcements"
+                className="inline-flex items-center gap-1 text-xs font-medium text-accent hover:underline"
+              >
+                <span>Board</span>
+                <ArrowRight className="h-3 w-3 stroke-[1.5]" aria-hidden="true" />
+              </Link>
+            </div>
+
             {announcements.length === 0 ? (
-              <div className="rounded-xl border border-dashed border-line bg-soft/60 px-4 py-6 text-center">
-                <p className="text-sm font-semibold">No announcements yet</p>
-                <p className="mt-1 text-xs text-muted">Published class notices will appear here.</p>
+              <div className="rounded-md bg-surface-inset shadow-inset-1 border border-hairline/60 p-5 text-center">
+                <p className="text-xs text-text-3">No announcements posted yet.</p>
               </div>
             ) : (
-              <ul className="space-y-2">
+              <div className="space-y-2.5">
                 {announcements.map((announcement) => (
-                  <li key={announcement.id}>
-                    <Link
-                      to="/announcements"
-                      className="block rounded-xl border border-line/80 bg-soft/50 p-3 transition hover:-translate-y-0.5 hover:border-brand/30"
-                    >
-                      <div className="flex flex-wrap items-center gap-1.5">
-                        <CategoryBadge category={announcement.category} />
-                        <span className="text-[10px] font-medium text-muted">
-                          {formatDate(announcement.date, { short: true })}
-                        </span>
-                      </div>
-                      <p className="mt-1.5 line-clamp-2 text-xs font-semibold leading-snug">{announcement.title}</p>
-                    </Link>
-                  </li>
+                  <Link
+                    key={announcement.id}
+                    to="/announcements"
+                    className="block rounded-md bg-surface-inset shadow-inset-1 border border-hairline/60 p-3 hover:border-accent-line transition-all duration-fast"
+                  >
+                    <div className="flex items-center justify-between gap-2">
+                      <CategoryBadge category={announcement.category} />
+                      <span className="text-[10px] text-text-3 tabular-nums">
+                        {formatDate(announcement.date, { short: true })}
+                      </span>
+                    </div>
+                    <p className="mt-1.5 line-clamp-1 text-xs font-semibold text-text">
+                      {announcement.title}
+                    </p>
+                  </Link>
                 ))}
-              </ul>
+              </div>
             )}
-          </SectionCard>
+          </section>
         </div>
-      </div>
-    </div>
+      </motion.div>
+    </motion.div>
   );
 }

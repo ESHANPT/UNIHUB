@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { Link, Navigate, useSearchParams } from 'react-router-dom';
-import { AlertTriangle, ArrowLeft, Loader2, Lock, LogIn, LogOut, ShieldCheck } from 'lucide-react';
+import { AlertCircle, ArrowLeft, Loader2, Lock, LogIn, LogOut, ShieldCheck } from 'lucide-react';
 import Brand from '../../components/layout/Brand';
 import Button from '../../components/ui/Button';
 import { FullScreenLoader } from '../../components/auth/AdminGuard';
@@ -29,77 +29,75 @@ export default function AdminLogin() {
   };
 
   return (
-    <div className="relative flex min-h-screen items-center justify-center overflow-hidden px-4 py-10">
+    <div className="relative flex min-h-screen items-center justify-center overflow-hidden px-4 py-10 bg-bg">
+      {/* Subtle top-left radial lift */}
       <div aria-hidden="true" className="pointer-events-none absolute inset-0 -z-10">
-        <div className="absolute -left-24 top-0 h-96 w-96 rounded-full bg-brand opacity-20 blur-[120px]" />
-        <div className="absolute -right-24 bottom-0 h-96 w-96 rounded-full bg-fuchsia-400 opacity-15 blur-[130px]" />
+        <div className="absolute -left-24 top-0 h-96 w-96 rounded-full bg-surface/40 blur-[130px]" />
       </div>
 
       <div className="w-full max-w-md">
         <Link
           to="/"
-          className="mb-4 inline-flex items-center gap-1.5 text-xs font-semibold text-muted transition hover:text-ink"
+          className="mb-5 inline-flex items-center gap-1.5 text-xs font-medium text-text-3 transition-colors hover:text-text"
         >
-          <ArrowLeft className="h-3.5 w-3.5" aria-hidden="true" />
-          Back to the student portal
+          <ArrowLeft className="h-3.5 w-3.5 stroke-[1.5]" aria-hidden="true" />
+          <span>Back to student portal</span>
         </Link>
 
-        <div className="card p-6 sm:p-8">
+        <div className="glass rounded-xl shadow-elev-3 p-6 sm:p-8 border border-glass-border">
           <Brand />
 
-          <div className="mt-6 flex items-start gap-3">
-            <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-brand-soft text-brand-ink">
-              <Lock className="h-5 w-5" aria-hidden="true" />
+          <div className="mt-6 flex items-start gap-3.5">
+            <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-md bg-surface-inset shadow-inset-1 border border-hairline text-accent">
+              <Lock className="h-5 w-5 stroke-[1.5]" aria-hidden="true" />
             </div>
             <div>
-              <h1 className="text-xl font-bold tracking-tight">Administrator sign in</h1>
-              <p className="mt-1 text-sm leading-relaxed text-muted">
-                Only the authorised class administrator can manage deadlines, timetable, reminders and announcements.
-                Students never need an account.
+              <h1 className="text-xl font-serif tracking-tight text-text">Administrator sign in</h1>
+              <p className="mt-1 text-xs leading-relaxed text-text-3">
+                Authorized administrators can manage deadlines, timetable, reminders, and class notices. Students do not require sign in.
               </p>
             </div>
           </div>
 
-          {!configured ? (
-            <div className="mt-5 rounded-xl border border-amber-300/60 bg-amber-50 px-3 py-2.5 text-xs leading-relaxed text-amber-800 dark:border-amber-500/30 dark:bg-amber-500/10 dark:text-amber-200">
+          {!configured && (
+            <div className="mt-5 rounded-md border-l-[3px] border-l-warning bg-surface-inset shadow-inset-1 p-3.5 text-xs leading-relaxed text-text-2">
               <p className="flex items-start gap-2">
-                <AlertTriangle className="mt-0.5 h-3.5 w-3.5 shrink-0" aria-hidden="true" />
-                Supabase is not configured. Add <code className="font-semibold">VITE_SUPABASE_URL</code> and{' '}
-                <code className="font-semibold">VITE_SUPABASE_PUBLISHABLE_KEY</code> to your <code>.env</code> file,
-                then restart the dev server.
+                <AlertCircle className="mt-0.5 h-3.5 w-3.5 shrink-0 text-warning stroke-[1.5]" aria-hidden="true" />
+                <span>
+                  Supabase is not configured. Add environment variables to your configuration and restart the application.
+                </span>
               </p>
             </div>
-          ) : null}
+          )}
 
-          {notAdmin && configured ? (
-            <div className="mt-5 rounded-xl border border-rose-200 bg-rose-50 px-3 py-3 text-xs leading-relaxed text-rose-700 dark:border-rose-500/30 dark:bg-rose-500/10 dark:text-rose-200">
-              <p className="flex items-start gap-2 font-semibold">
-                <AlertTriangle className="mt-0.5 h-3.5 w-3.5 shrink-0" aria-hidden="true" />
-                This Google account is not an authorised administrator.
+          {notAdmin && configured && (
+            <div className="mt-5 rounded-md border-l-[3px] border-l-danger bg-surface-inset shadow-inset-1 p-3.5 text-xs leading-relaxed text-text-2">
+              <p className="flex items-start gap-2 font-semibold text-danger">
+                <AlertCircle className="mt-0.5 h-3.5 w-3.5 shrink-0 stroke-[1.5]" aria-hidden="true" />
+                <span>Account not authorized.</span>
               </p>
-              <p className="mt-1 pl-5">
+              <p className="mt-1 pl-5 text-text-3">
                 {user?.email ? (
                   <>
-                    Signed in as <span className="font-semibold">{user.email}</span>. Ask the project owner to add
-                    your Supabase user ID to the admin allowlist, or try a different account.
+                    Signed in as <span className="font-semibold text-text">{user.email}</span>. Request administrator access in Supabase or switch accounts.
                   </>
                 ) : (
-                  'Ask the project owner to add your Supabase user ID to the admin allowlist.'
+                  'Request administrator authorization from the repository owner.'
                 )}
               </p>
             </div>
-          ) : null}
+          )}
 
-          {error && configured ? (
-            <p className="mt-5 rounded-xl border border-rose-200 bg-rose-50 px-3 py-2.5 text-xs leading-relaxed text-rose-700 dark:border-rose-500/30 dark:bg-rose-500/10 dark:text-rose-200">
+          {error && configured && (
+            <p className="mt-5 rounded-md border-l-[3px] border-l-danger bg-surface-inset shadow-inset-1 p-3 text-xs leading-relaxed text-danger">
               {error}
             </p>
-          ) : null}
+          )}
 
-          <div className="mt-6 space-y-2">
+          <div className="mt-6 space-y-2.5">
             {session && !isAdmin ? (
               <Button variant="secondary" className="w-full" icon={LogOut} onClick={signOut}>
-                Sign out and try another account
+                Sign out and use another account
               </Button>
             ) : (
               <Button
@@ -108,15 +106,14 @@ export default function AdminLogin() {
                 onClick={handleSignIn}
                 disabled={busy || !configured}
               >
-                {busy ? 'Redirecting to Google…' : 'Continue with Google'}
+                {busy ? 'Connecting to Google…' : 'Continue with Google'}
               </Button>
             )}
           </div>
 
-          <div className="mt-6 flex items-start gap-2 rounded-xl border border-line bg-soft px-3 py-2.5 text-[11px] leading-relaxed text-muted">
-            <ShieldCheck className="mt-0.5 h-3.5 w-3.5 shrink-0 text-brand" aria-hidden="true" />
-            Administrator access is verified against a protected allowlist in Supabase and enforced again by Row Level
-            Security on every write.
+          <div className="mt-6 flex items-start gap-2 rounded-md bg-surface-inset shadow-inset-1 border border-hairline/60 p-3 text-[11px] leading-relaxed text-text-3">
+            <ShieldCheck className="mt-0.5 h-3.5 w-3.5 shrink-0 text-accent stroke-[1.5]" aria-hidden="true" />
+            <span>Administrator access is verified against Supabase allowlist and protected by Row Level Security.</span>
           </div>
         </div>
       </div>

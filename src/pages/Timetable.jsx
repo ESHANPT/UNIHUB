@@ -14,6 +14,7 @@ import PageHeader from '../components/ui/PageHeader';
 import Button from '../components/ui/Button';
 import StatCard from '../components/ui/StatCard';
 import EmptyState from '../components/ui/EmptyState';
+import Badge from '../components/ui/Badge';
 import { ErrorBanner, PageSkeleton } from '../components/ui/DataStatus';
 import ClassCard from '../components/timetable/ClassCard';
 
@@ -27,9 +28,9 @@ export default function Timetable() {
       data.classes.reduce(
         (sum, entry) =>
           sum + Math.max(0, (minutesFromTime(entry.endTime) ?? 0) - (minutesFromTime(entry.startTime) ?? 0)),
-        0,
+        0
       ),
-    [data.classes],
+    [data.classes]
   );
 
   const busiest = useMemo(() => {
@@ -42,18 +43,18 @@ export default function Timetable() {
 
   if (loading) {
     return (
-      <div className="animate-rise">
-        <PageHeader title="Weekly timetable" subtitle="Your semester, laid out week by week." />
+      <div>
+        <PageHeader title="Weekly timetable" subtitle="Your semester classes and lecture hours." />
         <PageSkeleton />
       </div>
     );
   }
 
   return (
-    <div className="animate-rise">
+    <div className="space-y-6">
       <PageHeader
         title="Weekly timetable"
-        subtitle="The shared class timetable, updated live."
+        subtitle="The shared class schedule, updated live by your administrator."
         actions={
           <Button variant="secondary" size="sm" icon={RefreshCw} onClick={refresh}>
             Refresh
@@ -63,15 +64,25 @@ export default function Timetable() {
 
       <ErrorBanner message={error} onRetry={refresh} />
 
-      <div className="mb-5 grid gap-3 sm:grid-cols-3">
-        <StatCard label="Classes this week" value={data.classes.length} icon={CalendarDays} tone="brand" hint="Across all days" />
-        <StatCard label="Weekly contact hours" value={formatHours(totalMinutes)} icon={Clock} tone="sky" hint="Scheduled class time" />
+      {/* Summary stats with Obsidian & Brass styling */}
+      <div className="grid gap-3 sm:grid-cols-3">
+        <StatCard
+          label="Classes this week"
+          value={data.classes.length}
+          icon={CalendarDays}
+          hint="Across all weekdays"
+        />
+        <StatCard
+          label="Weekly lecture hours"
+          value={formatHours(totalMinutes)}
+          icon={Clock}
+          hint="Scheduled contact hours"
+        />
         <StatCard
           label="Busiest day"
-          value={busiest.count > 0 ? busiest.day.slice(0, 3) : '—'}
+          value={busiest.count > 0 ? busiest.day : '—'}
           icon={Zap}
-          tone="amber"
-          hint={busiest.count > 0 ? `${busiest.count} classes` : 'No classes scheduled'}
+          hint={busiest.count > 0 ? `${busiest.count} classes scheduled` : 'No classes scheduled'}
         />
       </div>
 
@@ -79,31 +90,35 @@ export default function Timetable() {
         <EmptyState
           icon={CalendarDays}
           title="No timetable published yet"
-          description="Your class admin has not added any classes. The weekly grid will appear here automatically once they do."
+          description="Your administrator has not added any classes to the schedule."
         />
       ) : (
         <>
+          {/* Mobile Day Selector and Day-by-Day View */}
           <div className="space-y-4 md:hidden">
             <div className="no-scrollbar -mx-1 flex gap-1.5 overflow-x-auto px-1 py-1">
               {DAYS.map((day, index) => {
                 const isToday = day === today;
+                const isSelected = selectedDay === day;
                 const count = classesForDay(data.classes, day).length;
                 return (
                   <button
                     key={day}
                     type="button"
                     onClick={() => setSelectedDay(day)}
-                    aria-pressed={selectedDay === day}
+                    aria-pressed={isSelected}
                     className={cn(
-                      'chip shrink-0 flex-col items-center gap-0.5 px-3.5 py-2',
-                      selectedDay === day && 'chip-active',
+                      'flex flex-col items-center gap-0.5 px-3.5 py-2 rounded-md transition-all duration-fast select-none cursor-pointer shrink-0',
+                      isSelected
+                        ? 'bg-surface shadow-elev-1 border border-accent-line text-text'
+                        : 'bg-surface-inset shadow-inset-1 border border-hairline/60 text-text-3 hover:text-text'
                     )}
                   >
-                    <span>{DAYS_SHORT[index]}</span>
+                    <span className="text-xs font-semibold">{DAYS_SHORT[index]}</span>
                     <span
                       className={cn(
-                        'text-[10px] font-bold',
-                        selectedDay === day ? 'text-white/80' : isToday ? 'text-brand' : 'text-muted',
+                        'text-[10px] tabular-nums font-medium',
+                        isSelected ? 'text-accent' : isToday ? 'text-text font-bold' : 'text-text-3'
                       )}
                     >
                       {count}
@@ -113,22 +128,22 @@ export default function Timetable() {
               })}
             </div>
 
-            <section className="card p-4">
-              <div className="mb-3 flex items-center justify-between">
+            <section className="bg-surface rounded-lg shadow-elev-1 border border-hairline p-4">
+              <div className="mb-3.5 flex items-center justify-between">
                 <div>
-                  <h2 className="text-sm font-semibold">{selectedDay}</h2>
-                  <p className="text-[11px] text-muted">
+                  <h2 className="text-sm font-semibold text-text">{selectedDay}</h2>
+                  <p className="text-xs text-text-3 tabular-nums">
                     {selectedClasses.length === 0
                       ? 'No classes'
                       : `${selectedClasses.length} class${selectedClasses.length === 1 ? '' : 'es'}`}
                   </p>
                 </div>
-                {selectedDay === today ? <span className="badge tone-brand">Today</span> : null}
+                {selectedDay === today && <Badge tone="accent">Today</Badge>}
               </div>
 
               {selectedClasses.length === 0 ? (
-                <div className="rounded-xl border border-dashed border-line bg-soft/50 px-4 py-6 text-center text-xs text-muted">
-                  A free day — nothing scheduled.
+                <div className="rounded-md bg-surface-inset shadow-inset-1 border border-hairline/60 px-4 py-8 text-center text-xs text-text-3">
+                  No classes scheduled for {selectedDay}.
                 </div>
               ) : (
                 <div className="space-y-2.5">
@@ -140,46 +155,61 @@ export default function Timetable() {
             </section>
           </div>
 
-          <section className="card hidden p-3 md:block">
-            <div className="mb-2 flex items-center justify-between px-1">
-              <p className="text-xs font-semibold text-muted">Week overview</p>
-              <p className="text-[11px] text-muted">
-                Today: <span className="font-semibold text-ink">{today}</span> · {todayClasses.length} classes
-              </p>
+          {/* Desktop Weekly Grid on an Inset Surface (DESIGN.md §7) */}
+          <section className="hidden md:block bg-surface rounded-lg shadow-elev-2 border border-hairline/60 p-4">
+            <div className="mb-3 flex items-center justify-between px-1">
+              <p className="text-xs font-medium text-text-2">Weekly grid</p>
+              <div className="flex items-center gap-2 text-xs text-text-3">
+                <span>Today:</span>
+                <span className="font-medium text-text">{today}</span>
+                <span className="tabular-nums font-medium">({todayClasses.length} classes)</span>
+              </div>
             </div>
-            <div className="overflow-x-auto pb-1">
-              <div className="grid min-w-[860px] grid-cols-7 gap-2">
+
+            {/* Inset surface container */}
+            <div className="rounded-lg bg-surface-inset shadow-inset-1 border border-hairline/60 p-3 overflow-x-auto">
+              <div className="grid min-w-[820px] grid-cols-7 gap-2.5">
                 {DAYS.map((day, index) => {
                   const entries = classesForDay(data.classes, day);
                   const isToday = day === today;
+
                   return (
                     <div
                       key={day}
                       className={cn(
-                        'flex min-h-[15rem] flex-col gap-2 rounded-2xl border p-2',
-                        isToday ? 'border-brand/40 bg-brand-soft/50' : 'border-line/70 bg-soft/40',
+                        'flex min-h-[16rem] flex-col gap-2 rounded-md p-2 transition-colors relative',
+                        isToday
+                          ? 'bg-surface/90 shadow-elev-1 border border-accent-line/50'
+                          : 'bg-surface/30 border border-hairline/40'
                       )}
                     >
-                      <div className="flex items-center justify-between gap-1 px-1">
-                        <div className="flex items-center gap-1">
+                      {/* Thin brass line for today per DESIGN.md §7 */}
+                      {isToday && (
+                        <div className="absolute top-0 inset-x-2 h-[2px] rounded-full bg-accent" />
+                      )}
+
+                      <div className="flex items-center justify-between gap-1 px-1 pt-0.5">
+                        <div className="flex items-center gap-1.5">
                           <span
                             className={cn(
-                              'text-[11px] font-bold uppercase tracking-wide',
-                              isToday ? 'text-brand-ink' : 'text-muted',
+                              'text-xs font-semibold',
+                              isToday ? 'text-accent' : 'text-text-3'
                             )}
                           >
                             {DAYS_SHORT[index]}
                           </span>
-                          {isToday ? <span className="h-1.5 w-1.5 rounded-full bg-brand" aria-label="Today" /> : null}
+                          {isToday && <span className="h-1.5 w-1.5 rounded-full bg-accent" />}
                         </div>
-                        <span className="text-[10px] font-semibold text-muted">{entries.length}</span>
+                        <span className="text-[10px] tabular-nums text-text-3 font-medium">
+                          {entries.length}
+                        </span>
                       </div>
 
                       <div className="flex flex-col gap-2">
                         {entries.length === 0 ? (
-                          <p className="rounded-lg border border-dashed border-line px-2 py-4 text-center text-[10px] text-muted">
-                            Free day
-                          </p>
+                          <div className="rounded border border-dashed border-hairline py-5 text-center text-[10px] text-text-3">
+                            Free
+                          </div>
                         ) : (
                           entries.map((entry) => <ClassCard key={entry.id} entry={entry} />)
                         )}

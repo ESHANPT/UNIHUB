@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { DAYS, cn, todayName } from '../../lib/utils';
 import { Field, FormActions, FormError } from '../ui/Field';
+import { Input, Select } from '../ui/Input';
 
 export default function ClassForm({ initial, onSubmit, onCancel, submitLabel = 'Save class' }) {
   const [values, setValues] = useState(() => ({
@@ -23,16 +24,16 @@ export default function ClassForm({ initial, onSubmit, onCancel, submitLabel = '
   const handleSubmit = (event) => {
     event.preventDefault();
     const nextErrors = {};
-    if (!values.subject.trim()) nextErrors.subject = 'Add the subject name.';
-    if (!values.startTime) nextErrors.startTime = 'Pick a start time.';
-    if (!values.endTime) nextErrors.endTime = 'Pick an end time.';
+    if (!values.subject.trim()) nextErrors.subject = 'Subject name is required.';
+    if (!values.startTime) nextErrors.startTime = 'Start time is required.';
+    if (!values.endTime) nextErrors.endTime = 'End time is required.';
     if (values.startTime && values.endTime && values.startTime >= values.endTime) {
-      nextErrors.endTime = 'The class must end after it starts.';
+      nextErrors.endTime = 'End time must be after start time.';
     }
 
     setErrors(nextErrors);
     if (Object.keys(nextErrors).length > 0) {
-      setFormError('Please fix the highlighted fields before saving.');
+      setFormError('Please check the required fields.');
       return;
     }
 
@@ -51,22 +52,20 @@ export default function ClassForm({ initial, onSubmit, onCancel, submitLabel = '
       <FormError>{formError}</FormError>
 
       <Field label="Subject" htmlFor="class-subject" error={errors.subject}>
-        <input
+        <Input
           id="class-subject"
-          className="input"
           placeholder="e.g. Operating Systems"
           value={values.subject}
           onChange={update('subject')}
-          aria-invalid={Boolean(errors.subject)}
+          error={Boolean(errors.subject)}
           autoFocus
         />
       </Field>
 
       <div className="grid gap-4 sm:grid-cols-2">
         <Field label="Lecturer" htmlFor="class-lecturer" hint="Optional">
-          <input
+          <Input
             id="class-lecturer"
-            className="input"
             placeholder="e.g. Dr. Kenji Tanaka"
             value={values.lecturer}
             onChange={update('lecturer')}
@@ -74,10 +73,9 @@ export default function ClassForm({ initial, onSubmit, onCancel, submitLabel = '
         </Field>
 
         <Field label="Room / location" htmlFor="class-location" hint="Optional">
-          <input
+          <Input
             id="class-location"
-            className="input"
-            placeholder="e.g. Lecture Theatre 1"
+            placeholder="e.g. Lecture Hall B"
             value={values.location}
             onChange={update('location')}
           />
@@ -86,47 +84,42 @@ export default function ClassForm({ initial, onSubmit, onCancel, submitLabel = '
 
       <div className="grid gap-3 sm:grid-cols-3">
         <Field label="Day" htmlFor="class-day">
-          <select id="class-day" className="input select" value={values.day} onChange={update('day')}>
+          <Select id="class-day" value={values.day} onChange={update('day')}>
             {DAYS.map((day) => (
               <option key={day} value={day}>
                 {day}
               </option>
             ))}
-          </select>
+          </Select>
         </Field>
 
         <Field label="Starts" htmlFor="class-start" error={errors.startTime}>
-          <input
+          <Input
             id="class-start"
             type="time"
-            className="input"
             value={values.startTime}
             onChange={update('startTime')}
-            aria-invalid={Boolean(errors.startTime)}
+            error={Boolean(errors.startTime)}
           />
         </Field>
 
         <Field label="Ends" htmlFor="class-end" error={errors.endTime}>
-          <input
+          <Input
             id="class-end"
             type="time"
-            className="input"
             value={values.endTime}
             onChange={update('endTime')}
-            aria-invalid={Boolean(errors.endTime)}
+            error={Boolean(errors.endTime)}
           />
         </Field>
       </div>
 
-      <p
-        className={cn(
-          'rounded-xl border border-line bg-soft px-3 py-2 text-xs text-muted',
-          !values.subject.trim() && 'hidden',
-        )}
-      >
-        <span className="font-semibold text-ink">{values.subject.trim() || 'Class'}</span> · {values.day} ·{' '}
-        {values.startTime || '—'}–{values.endTime || '—'}
-      </p>
+      {values.subject.trim() && (
+        <div className="rounded-md bg-surface-inset shadow-inset-1 border border-hairline/60 px-3.5 py-2.5 text-xs text-text-2">
+          <span className="font-semibold text-text">{values.subject.trim()}</span> · {values.day} ·{' '}
+          <span className="tabular-nums">{values.startTime || '—'} – {values.endTime || '—'}</span>
+        </div>
+      )}
 
       <FormActions onCancel={onCancel} submitLabel={submitLabel} />
     </form>

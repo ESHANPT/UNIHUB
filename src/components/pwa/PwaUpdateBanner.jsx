@@ -10,16 +10,16 @@ export default function PwaUpdateBanner() {
   return (
     <aside
       aria-label="Application update available"
-      className="fixed bottom-20 right-4 z-50 max-w-sm rounded-2xl border border-brand/30 bg-surface p-4 shadow-float sm:bottom-6 sm:right-6 animate-rise"
+      className="glass fixed bottom-24 right-4 z-50 max-w-sm rounded-xl p-4 shadow-elev-3 sm:bottom-6 sm:right-6"
     >
       <div className="flex items-start gap-3">
-        <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-brand-soft text-brand-ink">
-          <RefreshCw className="h-4 w-4" aria-hidden="true" />
+        <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-md bg-accent-soft text-accent">
+          <RefreshCw className="h-4 w-4 stroke-[1.5]" aria-hidden="true" />
         </div>
         <div className="flex-1 pr-1">
-          <p className="text-sm font-semibold text-ink">Update available</p>
-          <p className="mt-0.5 text-xs text-muted">
-            A new version of UniHub is ready. Reload to apply updates.
+          <p className="text-sm font-semibold text-text">Update available</p>
+          <p className="mt-0.5 text-xs text-text-3">
+            A new version of UniHub is ready.
           </p>
           <div className="mt-3 flex items-center gap-2">
             <Button size="sm" onClick={updateApp}>
@@ -33,10 +33,10 @@ export default function PwaUpdateBanner() {
         <button
           type="button"
           onClick={dismissUpdate}
-          className="rounded-lg p-1 text-muted transition hover:bg-soft hover:text-ink"
+          className="rounded-full p-1 text-text-3 transition-colors duration-fast hover:bg-surface hover:text-text"
           aria-label="Dismiss update notification"
         >
-          <X className="h-4 w-4" aria-hidden="true" />
+          <X className="h-3.5 w-3.5 stroke-[1.5]" aria-hidden="true" />
         </button>
       </div>
     </aside>

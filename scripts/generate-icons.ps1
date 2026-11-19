@@ -16,8 +16,8 @@ function Draw-UniHubIcon {
     $g.Clear([System.Drawing.Color]::Transparent)
 
     $rect = New-Object System.Drawing.Rectangle(0, 0, $size, $size)
-    $c1 = [System.Drawing.ColorTranslator]::FromHtml('#6a4cff')
-    $c2 = [System.Drawing.ColorTranslator]::FromHtml('#5433e8')
+    $c1 = [System.Drawing.ColorTranslator]::FromHtml('#131416')
+    $c2 = [System.Drawing.ColorTranslator]::FromHtml('#191B1E')
     $brush = New-Object System.Drawing.Drawing2D.LinearGradientBrush($rect, $c1, $c2, 45.0)
 
     if ($isMaskable -or $isApple) {
@@ -41,7 +41,7 @@ function Draw-UniHubIcon {
     $offsetX = ($size - (32 * $scale)) / 2.0
     $offsetY = ($size - (32 * $scale)) / 2.0
 
-    $whiteBrush = New-Object System.Drawing.SolidBrush([System.Drawing.Color]::White)
+    $whiteBrush = New-Object System.Drawing.SolidBrush([System.Drawing.ColorTranslator]::FromHtml('#C8A96B'))
 
     # 1. Top diamond
     $capPath = New-Object System.Drawing.Drawing2D.GraphicsPath

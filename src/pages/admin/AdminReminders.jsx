@@ -14,9 +14,9 @@ import ReminderForm from '../../components/reminders/ReminderForm';
 import ReminderCard from '../../components/reminders/ReminderCard';
 
 const SECTIONS = [
-  { key: 'overdue', title: 'Overdue', dot: 'bg-rose-500', empty: 'Nothing overdue.' },
-  { key: 'dueToday', title: 'Due today', dot: 'bg-amber-500', empty: 'Nothing due today.' },
-  { key: 'upcoming', title: 'Upcoming', dot: 'bg-violet-500', empty: 'No upcoming reminders.' },
+  { key: 'overdue', title: 'Overdue', dot: 'bg-danger', empty: 'Nothing overdue.' },
+  { key: 'dueToday', title: 'Due today', dot: 'bg-warning', empty: 'Nothing due today.' },
+  { key: 'upcoming', title: 'Upcoming', dot: 'bg-accent', empty: 'No upcoming reminders.' },
 ];
 
 export default function AdminReminders() {
@@ -99,10 +99,12 @@ export default function AdminReminders() {
 
       <ErrorBanner message={error} onRetry={refresh} />
 
-      <div className="mb-5 flex items-start gap-2 rounded-2xl border border-line bg-soft px-3 py-2.5 text-[11px] leading-relaxed text-muted">
-        <Info className="mt-0.5 h-3.5 w-3.5 shrink-0 text-brand" aria-hidden="true" />
-        There is no per-student completion state in this version. Students see these reminders read-only, and browser
-        notifications only fire while their tab is open.
+      <div className="mb-5 flex items-start gap-2.5 rounded-md bg-surface-inset shadow-inset-1 border border-hairline/60 p-3 text-xs leading-relaxed text-text-3">
+        <Info className="mt-0.5 h-3.5 w-3.5 shrink-0 text-accent stroke-[1.5]" aria-hidden="true" />
+        <span>
+          There is no per-student completion state in this version. Students see these reminders read-only, and browser
+          notifications only fire while their tab is open.
+        </span>
       </div>
 
       {data.reminders.length === 0 ? (

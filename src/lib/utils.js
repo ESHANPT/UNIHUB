@@ -1,3 +1,5 @@
+import { clsx } from 'clsx';
+
 export const DAYS = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
 export const DAYS_SHORT = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
 export const DEADLINE_CATEGORIES = ['Assignment', 'Quiz', 'Exam', 'Project', 'Other'];
@@ -6,9 +8,10 @@ export const PRIORITIES = ['Low', 'Medium', 'High'];
 export const PRIORITY_ORDER = { High: 0, Medium: 1, Low: 2 };
 export const THEMES = ['light', 'dark', 'system'];
 
-const SUBJECT_COLORS = ['#6a4cff', '#0ea5e9', '#10b981', '#f59e0b', '#f43f5e', '#06b6d4', '#d946ef', '#84cc16'];
+// Course colour palette (muted, 6 max, edges/dots only - DESIGN.md §7)
+const SUBJECT_COLORS = ['#8EA4BC', '#86AE92', '#C9966A', '#B59AB8', '#7FB0AA', '#C8A96B'];
 
-export const cn = (...values) => values.filter(Boolean).join(' ');
+export const cn = (...values) => clsx(values);
 
 export function uid(prefix = 'id') {
   const random =
@@ -190,11 +193,10 @@ export function formatHours(minutes) {
 
 export function greeting(date = new Date()) {
   const hour = date.getHours();
-  if (hour < 5) return 'Still up';
+  if (hour < 5) return 'Working late';
   if (hour < 12) return 'Good morning';
   if (hour < 17) return 'Good afternoon';
-  if (hour < 22) return 'Good evening';
-  return 'Late night grind';
+  return 'Good evening';
 }
 
 export function downloadJson(filename, content) {

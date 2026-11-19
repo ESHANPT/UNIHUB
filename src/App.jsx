@@ -1,3 +1,4 @@
+import { useState, useEffect } from 'react';
 import { Navigate, Route, Routes } from 'react-router-dom';
 import AppLayout from './components/layout/AppLayout';
 import AdminLayout from './components/layout/AdminLayout';
@@ -16,6 +17,7 @@ import AdminReminders from './pages/admin/AdminReminders';
 import AdminAnnouncements from './pages/admin/AdminAnnouncements';
 import AdminData from './pages/admin/AdminData';
 import PwaUpdateBanner from './components/pwa/PwaUpdateBanner';
+import { BootLoader } from './components/ui/Loader';
 import { useClassData } from './store/ClassDataContext';
 import { useReminderNotifications } from './hooks/useNotifications';
 
@@ -26,8 +28,22 @@ function NotificationBridge() {
 }
 
 export default function App() {
+  const { loading } = useClassData();
+  const [showBootLoader, setShowBootLoader] = useState(true);
+
+  useEffect(() => {
+    // Keep boot loader visible for at least 600ms for smooth orchestrated initial experience
+    if (!loading) {
+      const timer = setTimeout(() => {
+        setShowBootLoader(false);
+      }, 500);
+      return () => clearTimeout(timer);
+    }
+  }, [loading]);
+
   return (
     <>
+      <BootLoader visible={showBootLoader} />
       <NotificationBridge />
       <PwaUpdateBanner />
       <Routes>

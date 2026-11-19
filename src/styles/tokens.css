@@ -1,0 +1,127 @@
+/* UniHub Design Tokens — Obsidian & Brass */
+
+:root,
+[data-theme="dark"],
+.dark {
+  /* Surfaces */
+  --bg:              #131416;  /* app background */
+  --surface:         #191B1E;  /* default raised surface */
+  --surface-2:       #1E2124;  /* higher raised (modals, active) */
+  --surface-inset:   #0F1012;  /* pressed / input wells */
+
+  /* Neumorphic paired shadows */
+  --shadow-dark:     rgba(0, 0, 0, 0.55);
+  --shadow-light:    rgba(255, 255, 255, 0.035);
+
+  /* Glass overlays */
+  --glass-bg:        rgba(30, 33, 36, 0.62);
+  --glass-border:    rgba(255, 255, 255, 0.07);
+
+  /* Text */
+  --text:            #ECE8E0;  /* warm off-white */
+  --text-2:          #A9A59C;  /* secondary */
+  --text-3:          #6E6B65;  /* tertiary / disabled (decorative only) */
+
+  /* Accent: champagne brass (<5% of any screen) */
+  --accent:          #C8A96B;
+  --accent-hover:    #D8BC82;
+  --accent-ink:      #1A1710;  /* text on accent fills */
+  --accent-soft:     rgba(200, 169, 107, 0.12);
+  --accent-line:     rgba(200, 169, 107, 0.35);
+
+  /* Semantic */
+  --success:         #86AE92;
+  --success-soft:    rgba(134, 174, 146, 0.15);
+  --warning:         #D49A5E;
+  --warning-soft:    rgba(212, 154, 94, 0.15);
+  --danger:          #C9726A;
+  --danger-soft:     rgba(201, 114, 106, 0.15);
+  --info:            #8EA4BC;
+  --info-soft:       rgba(142, 164, 188, 0.15);
+
+  --hairline:        rgba(255, 255, 255, 0.06);
+
+  /* Course color palette (§7) */
+  --course-slate:    #8EA4BC;
+  --course-sage:     #86AE92;
+  --course-clay:     #C9966A;
+  --course-mauve:    #B59AB8;
+  --course-teal:     #7FB0AA;
+  --course-brass:    #C8A96B;
+
+  color-scheme: dark;
+}
+
+[data-theme="light"],
+html:not(.dark):not([data-theme="dark"]) {
+  --bg:              #E6E2DA;
+  --surface:         #ECE8E0;
+  --surface-2:       #F1EEE7;
+  --surface-inset:   #DDD8CE;
+
+  --shadow-dark:     rgba(150, 141, 124, 0.45);
+  --shadow-light:    rgba(255, 255, 255, 0.85);
+
+  --glass-bg:        rgba(240, 237, 230, 0.66);
+  --glass-border:    rgba(255, 255, 255, 0.6);
+
+  --text:            #1E1C18;
+  --text-2:          #5B574F;
+  --text-3:          #8D887E;
+
+  --accent:          #8A6A2B;
+  --accent-hover:    #755822;
+  --accent-ink:      #FBF7EC;
+  --accent-soft:     rgba(138, 106, 43, 0.10);
+  --accent-line:     rgba(138, 106, 43, 0.35);
+
+  --success:         #4E7C5C;
+  --success-soft:    rgba(78, 124, 92, 0.15);
+  --warning:         #A8702F;
+  --warning-soft:    rgba(168, 112, 47, 0.15);
+  --danger:          #A2483F;
+  --danger-soft:     rgba(162, 72, 63, 0.15);
+  --info:            #4F6A86;
+  --info-soft:       rgba(79, 106, 134, 0.15);
+
+  --hairline:        rgba(0, 0, 0, 0.06);
+
+  --course-slate:    #4F6A86;
+  --course-sage:     #4E7C5C;
+  --course-clay:     #A8702F;
+  --course-mauve:    #826286;
+  --course-teal:     #3B7670;
+  --course-brass:    #8A6A2B;
+
+  color-scheme: light;
+}
+
+:root {
+  /* Neumorphic elevation */
+  --elev-1: 4px 4px 10px var(--shadow-dark), -3px -3px 8px var(--shadow-light);
+  --elev-2: 8px 8px 20px var(--shadow-dark), -6px -6px 16px var(--shadow-light);
+  --elev-3: 14px 14px 32px var(--shadow-dark), -8px -8px 22px var(--shadow-light);
+
+  --inset-1: inset 3px 3px 7px var(--shadow-dark), inset -2px -2px 6px var(--shadow-light);
+  --inset-2: inset 6px 6px 14px var(--shadow-dark), inset -4px -4px 10px var(--shadow-light);
+
+  /* Radius */
+  --r-sm: 10px;
+  --r-md: 16px;
+  --r-lg: 22px;
+  --r-xl: 30px;
+  --r-full: 9999px;
+
+  /* Motion */
+  --ease-out:    cubic-bezier(0.22, 1, 0.36, 1);
+  --ease-in-out: cubic-bezier(0.65, 0, 0.35, 1);
+  --spring:      cubic-bezier(0.34, 1.4, 0.64, 1);
+  --d-fast: 140ms;
+  --d-base: 240ms;
+  --d-slow: 420ms;
+  --d-page: 600ms;
+
+  /* Typography */
+  --font-serif: "Instrument Serif", Georgia, serif;
+  --font-sans: "Geist Variable", "Geist", system-ui, -apple-system, sans-serif;
+}

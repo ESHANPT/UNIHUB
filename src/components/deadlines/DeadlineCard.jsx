@@ -1,95 +1,107 @@
-import { CalendarClock, Check, Pencil, RotateCcw, Trash2 } from 'lucide-react';
-import { cn, formatDateTime } from '../../lib/utils';
-import { Badge, CategoryBadge, CountdownBadge, PriorityBadge, SubjectChip } from '../ui/Badge';
+import { CalendarClock, Pencil, Trash2 } from 'lucide-react';
+import { cn, formatDateTime, parseDateTime } from '../../lib/utils';
+import { CategoryBadge, CountdownBadge, PriorityBadge, SubjectChip } from '../ui/Badge';
 import { IconButton } from '../ui/Button';
+import Checkbox from '../ui/Checkbox';
 
 export default function DeadlineCard({ deadline, now, onEdit, onDelete, onToggle, busy = false }) {
-  const completed = deadline.completed;
+  const completed = Boolean(deadline.completed);
   const hasActions = Boolean(onEdit || onDelete);
+
+  // Compute urgency bar for DESIGN.md §7: 3px left bar (--danger / --warning / --text-3)
+  const dueDate = parseDateTime(deadline.dueDate);
+  const diff = dueDate ? dueDate.getTime() - (now || Date.now()) : 0;
+  const isOverdue = diff < 0 && !completed;
+  const isUrgent = diff >= 0 && diff <= 48 * 60 * 60 * 1000 && !completed;
+
+  const barColor = completed
+    ? 'var(--text-3)'
+    : isOverdue
+      ? 'var(--danger)'
+      : isUrgent
+        ? 'var(--warning)'
+        : 'var(--hairline)';
 
   return (
     <article
       className={cn(
-        'card group flex flex-col gap-3 p-4 transition duration-200 hover:-translate-y-0.5 hover:shadow-float',
-        completed && 'border-emerald-200/80 bg-emerald-50/40 dark:border-emerald-500/25 dark:bg-emerald-500/[0.06]',
+        'group relative flex flex-col justify-between rounded-lg bg-surface shadow-elev-1 border border-hairline p-4 sm:p-5 transition-all duration-base ease-out',
+        'hover:-translate-y-0.5 hover:shadow-elev-2 hover:border-accent-line/40'
       )}
+      style={{ borderLeftWidth: '3.5px', borderLeftColor: barColor }}
     >
-      <div className="flex items-start justify-between gap-2">
-        <div className="flex flex-wrap items-center gap-1.5">
-          <SubjectChip subject={deadline.subject} />
-          <CategoryBadge category={deadline.category} dot={false} />
+      <div className="flex items-start justify-between gap-3">
+        <div className="flex items-start gap-3 min-w-0 flex-1">
+          {onToggle && (
+            <div className="pt-0.5 shrink-0">
+              <Checkbox
+                checked={completed}
+                disabled={busy}
+                onChange={() => onToggle(deadline)}
+                aria-label={`Mark ${deadline.title} as ${completed ? 'pending' : 'complete'}`}
+              />
+            </div>
+          )}
+
+          <div className="min-w-0 flex-1">
+            <div className="flex flex-wrap items-center gap-1.5 mb-1.5">
+              <SubjectChip subject={deadline.subject} />
+              <CategoryBadge category={deadline.category} dot={false} />
+            </div>
+
+            <h3
+              className={cn(
+                'text-sm font-semibold text-text leading-snug break-words transition-colors',
+                completed && 'text-text-3 line-through'
+              )}
+            >
+              {deadline.title}
+            </h3>
+
+            {deadline.description && (
+              <p className="mt-1 line-clamp-2 text-xs text-text-3 leading-relaxed">
+                {deadline.description}
+              </p>
+            )}
+          </div>
         </div>
-        {hasActions ? (
-          <div className="flex shrink-0 items-center gap-0.5 opacity-100 transition sm:opacity-0 sm:group-focus-within:opacity-100 sm:group-hover:opacity-100">
-            {onEdit ? <IconButton icon={Pencil} label={`Edit ${deadline.title}`} onClick={() => onEdit(deadline)} /> : null}
-            {onDelete ? (
+
+        {hasActions && (
+          <div className="flex shrink-0 items-center gap-1 opacity-100 transition-opacity sm:opacity-0 sm:group-hover:opacity-100 sm:group-focus-within:opacity-100">
+            {onEdit && (
+              <IconButton
+                icon={Pencil}
+                size="sm"
+                variant="raised"
+                label={`Edit ${deadline.title}`}
+                onClick={() => onEdit(deadline)}
+              />
+            )}
+            {onDelete && (
               <IconButton
                 icon={Trash2}
+                size="sm"
+                variant="raised"
                 label={`Delete ${deadline.title}`}
                 onClick={() => onDelete(deadline)}
-                className="hover:text-rose-500"
+                className="hover:text-danger"
               />
-            ) : null}
+            )}
           </div>
-        ) : null}
-      </div>
-
-      <div>
-        <h3
-          className={cn(
-            'text-[0.95rem] font-semibold leading-snug break-words',
-            completed && 'text-muted line-through decoration-emerald-500/60',
-          )}
-        >
-          {deadline.title}
-        </h3>
-        {deadline.description ? (
-          <p className="mt-1 line-clamp-2 text-xs leading-relaxed text-muted">{deadline.description}</p>
-        ) : null}
-      </div>
-
-      <div className="mt-auto flex flex-wrap items-center gap-2">
-        <span className="inline-flex items-center gap-1.5 text-xs text-muted">
-          <CalendarClock className="h-3.5 w-3.5" aria-hidden="true" />
-          {formatDateTime(deadline.dueDate)}
-        </span>
-        {completed ? (
-          <Badge tone="emerald">
-            <Check className="h-3 w-3" aria-hidden="true" />
-            Completed
-          </Badge>
-        ) : (
-          <CountdownBadge value={deadline.dueDate} now={now} />
         )}
-        <PriorityBadge priority={deadline.priority} className="ml-auto" />
       </div>
 
-      {onToggle ? (
-        <button
-          type="button"
-          onClick={() => onToggle(deadline)}
-          disabled={busy}
-          aria-pressed={completed}
-          className={cn(
-            'inline-flex w-full items-center justify-center gap-2 rounded-xl border px-3 py-2 text-xs font-semibold transition disabled:opacity-60',
-            completed
-              ? 'border-emerald-300/70 bg-emerald-500/10 text-emerald-700 hover:bg-emerald-500/20 dark:border-emerald-500/30 dark:text-emerald-300'
-              : 'border-line bg-soft text-muted hover:border-brand/40 hover:text-brand-ink',
-          )}
-        >
-          {completed ? (
-            <>
-              <RotateCcw className="h-3.5 w-3.5" aria-hidden="true" />
-              Mark as pending
-            </>
-          ) : (
-            <>
-              <Check className="h-3.5 w-3.5" aria-hidden="true" />
-              Mark complete
-            </>
-          )}
-        </button>
-      ) : null}
+      <div className="mt-4 pt-3 border-t border-hairline/60 flex flex-wrap items-center justify-between gap-2 text-xs text-text-3">
+        <span className="inline-flex items-center gap-1.5 tabular-nums">
+          <CalendarClock className="h-3.5 w-3.5 stroke-[1.5]" aria-hidden="true" />
+          <span>{formatDateTime(deadline.dueDate)}</span>
+        </span>
+
+        <div className="flex items-center gap-2">
+          {!completed && <CountdownBadge value={deadline.dueDate} now={now} />}
+          <PriorityBadge priority={deadline.priority} />
+        </div>
+      </div>
     </article>
   );
 }

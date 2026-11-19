@@ -1,16 +1,13 @@
 import { Navigate, Outlet, useLocation } from 'react-router-dom';
-import { Loader2 } from 'lucide-react';
 import Brand from '../layout/Brand';
+import { ContentLoader } from '../ui/Loader';
 import { useAuth } from '../../store/AuthContext';
 
-export function FullScreenLoader({ label = 'Checking access…' }) {
+export function FullScreenLoader({ label = 'Verifying permissions…' }) {
   return (
     <div className="flex min-h-[70vh] flex-col items-center justify-center gap-4">
       <Brand />
-      <div className="flex items-center gap-2 text-sm text-muted">
-        <Loader2 className="h-4 w-4 animate-spin" aria-hidden="true" />
-        {label}
-      </div>
+      <ContentLoader label={label} />
     </div>
   );
 }

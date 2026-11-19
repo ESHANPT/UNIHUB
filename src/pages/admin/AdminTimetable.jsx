@@ -125,13 +125,12 @@ export default function AdminTimetable() {
       <ErrorBanner message={error} onRetry={refresh} />
 
       <div className="mb-5 grid gap-3 sm:grid-cols-3">
-        <StatCard label="Classes this week" value={data.classes.length} icon={CalendarDays} tone="brand" hint="Across all days" />
-        <StatCard label="Weekly contact hours" value={formatHours(totalMinutes)} icon={Clock} tone="sky" hint="Scheduled class time" />
+        <StatCard label="Classes this week" value={data.classes.length} icon={CalendarDays} hint="Across all days" />
+        <StatCard label="Weekly contact hours" value={formatHours(totalMinutes)} icon={Clock} hint="Scheduled class time" />
         <StatCard
           label="Busiest day"
-          value={busiest.count > 0 ? busiest.day.slice(0, 3) : '—'}
+          value={busiest.count > 0 ? busiest.day : '—'}
           icon={Zap}
-          tone="amber"
           hint={busiest.count > 0 ? `${busiest.count} classes` : 'No classes scheduled'}
         />
       </div>
@@ -151,53 +150,60 @@ export default function AdminTimetable() {
         <>
           <div className="space-y-4 md:hidden">
             <div className="no-scrollbar -mx-1 flex gap-1.5 overflow-x-auto px-1 py-1">
-              {DAYS.map((day, index) => (
-                <button
-                  key={day}
-                  type="button"
-                  onClick={() => setSelectedDay(day)}
-                  aria-pressed={selectedDay === day}
-                  className={cn(
-                    'chip shrink-0 flex-col items-center gap-0.5 px-3.5 py-2',
-                    selectedDay === day && 'chip-active',
-                  )}
-                >
-                  <span>{DAYS_SHORT[index]}</span>
-                  <span
+              {DAYS.map((day, index) => {
+                const isToday = day === today;
+                const isSelected = selectedDay === day;
+                const count = classesForDay(data.classes, day).length;
+                return (
+                  <button
+                    key={day}
+                    type="button"
+                    onClick={() => setSelectedDay(day)}
+                    aria-pressed={isSelected}
                     className={cn(
-                      'text-[10px] font-bold',
-                      selectedDay === day ? 'text-white/80' : day === today ? 'text-brand' : 'text-muted',
+                      'flex flex-col items-center gap-0.5 px-3.5 py-2 rounded-md transition-all duration-fast select-none cursor-pointer shrink-0',
+                      isSelected
+                        ? 'bg-surface shadow-elev-1 border border-accent-line text-text'
+                        : 'bg-surface-inset shadow-inset-1 border border-hairline/60 text-text-3 hover:text-text'
                     )}
                   >
-                    {classesForDay(data.classes, day).length}
-                  </span>
-                </button>
-              ))}
+                    <span className="text-xs font-semibold">{DAYS_SHORT[index]}</span>
+                    <span
+                      className={cn(
+                        'text-[10px] tabular-nums font-medium',
+                        isSelected ? 'text-accent' : isToday ? 'text-text font-bold' : 'text-text-3'
+                      )}
+                    >
+                      {count}
+                    </span>
+                  </button>
+                );
+              })}
             </div>
 
-            <section className="card p-4">
+            <section className="bg-surface rounded-lg shadow-elev-1 border border-hairline p-4">
               <div className="mb-3 flex items-center justify-between">
                 <div>
-                  <h2 className="text-sm font-semibold">{selectedDay}</h2>
-                  <p className="text-[11px] text-muted">
+                  <h2 className="text-sm font-semibold text-text">{selectedDay}</h2>
+                  <p className="text-xs text-text-3 tabular-nums">
                     {selectedClasses.length === 0
                       ? 'No classes'
                       : `${selectedClasses.length} class${selectedClasses.length === 1 ? '' : 'es'}`}
                   </p>
                 </div>
                 <div className="flex items-center gap-2">
-                  {selectedDay === today ? <span className="badge tone-brand">Today</span> : null}
+                  {selectedDay === today ? <span className="text-xs text-accent font-medium">Today</span> : null}
                   <IconButton
                     icon={Plus}
                     label={`Add class on ${selectedDay}`}
                     onClick={() => openCreate(selectedDay)}
-                    variant="secondary"
+                    variant="raised"
                   />
                 </div>
               </div>
 
               {selectedClasses.length === 0 ? (
-                <div className="rounded-xl border border-dashed border-line bg-soft/50 px-4 py-6 text-center text-xs text-muted">
+                <div className="rounded-md bg-surface-inset shadow-inset-1 border border-hairline/60 px-4 py-8 text-center text-xs text-text-3">
                   A free day — nothing scheduled.
                 </div>
               ) : (
@@ -210,15 +216,15 @@ export default function AdminTimetable() {
             </section>
           </div>
 
-          <section className="card hidden p-3 md:block">
-            <div className="mb-2 flex items-center justify-between px-1">
-              <p className="text-xs font-semibold text-muted">Week overview</p>
-              <p className="text-[11px] text-muted">
-                Today: <span className="font-semibold text-ink">{today}</span>
+          <section className="hidden md:block bg-surface rounded-lg shadow-elev-2 border border-hairline/60 p-4">
+            <div className="mb-3 flex items-center justify-between px-1">
+              <p className="text-xs font-medium text-text-2">Week overview</p>
+              <p className="text-xs text-text-3">
+                Today: <span className="font-semibold text-text">{today}</span>
               </p>
             </div>
-            <div className="overflow-x-auto pb-1">
-              <div className="grid min-w-[860px] grid-cols-7 gap-2">
+            <div className="rounded-lg bg-surface-inset shadow-inset-1 border border-hairline/60 p-3 overflow-x-auto">
+              <div className="grid min-w-[820px] grid-cols-7 gap-2.5">
                 {DAYS.map((day, index) => {
                   const entries = classesForDay(data.classes, day);
                   const isToday = day === today;
@@ -226,29 +232,34 @@ export default function AdminTimetable() {
                     <div
                       key={day}
                       className={cn(
-                        'flex min-h-[15rem] flex-col gap-2 rounded-2xl border p-2',
-                        isToday ? 'border-brand/40 bg-brand-soft/50' : 'border-line/70 bg-soft/40',
+                        'flex min-h-[16rem] flex-col gap-2 rounded-md p-2 transition-colors relative',
+                        isToday
+                          ? 'bg-surface/90 shadow-elev-1 border border-accent-line/50'
+                          : 'bg-surface/30 border border-hairline/40'
                       )}
                     >
-                      <div className="flex items-center justify-between gap-1 px-1">
-                        <div className="flex items-center gap-1">
+                      {isToday && (
+                        <div className="absolute top-0 inset-x-2 h-[2px] rounded-full bg-accent" />
+                      )}
+                      <div className="flex items-center justify-between gap-1 px-1 pt-0.5">
+                        <div className="flex items-center gap-1.5">
                           <span
                             className={cn(
-                              'text-[11px] font-bold uppercase tracking-wide',
-                              isToday ? 'text-brand-ink' : 'text-muted',
+                              'text-xs font-semibold',
+                              isToday ? 'text-accent' : 'text-text-3'
                             )}
                           >
                             {DAYS_SHORT[index]}
                           </span>
-                          {isToday ? <span className="h-1.5 w-1.5 rounded-full bg-brand" aria-label="Today" /> : null}
+                          {isToday ? <span className="h-1.5 w-1.5 rounded-full bg-accent" aria-label="Today" /> : null}
                         </div>
-                        <div className="flex items-center gap-0.5">
-                          <span className="text-[10px] font-semibold text-muted">{entries.length}</span>
+                        <div className="flex items-center gap-1">
+                          <span className="text-[10px] tabular-nums text-text-3 font-medium">{entries.length}</span>
                           <button
                             type="button"
                             onClick={() => openCreate(day)}
                             aria-label={`Add class on ${day}`}
-                            className="rounded-md p-0.5 text-muted transition hover:bg-surface hover:text-brand"
+                            className="rounded-md p-0.5 text-text-3 transition-colors hover:bg-surface hover:text-text"
                           >
                             <Plus className="h-3 w-3" aria-hidden="true" />
                           </button>
@@ -257,12 +268,17 @@ export default function AdminTimetable() {
 
                       <div className="flex flex-col gap-2">
                         {entries.length === 0 ? (
-                          <p className="rounded-lg border border-dashed border-line px-2 py-4 text-center text-[10px] text-muted">
-                            Free day
-                          </p>
+                          <div className="rounded border border-dashed border-hairline py-5 text-center text-[10px] text-text-3">
+                            Free
+                          </div>
                         ) : (
                           entries.map((entry) => (
-                            <ClassCard key={entry.id} entry={entry} onEdit={openEdit} onDelete={handleDelete} />
+                            <ClassCard
+                              key={entry.id}
+                              entry={entry}
+                              onEdit={openEdit}
+                              onDelete={handleDelete}
+                            />
                           ))
                         )}
                       </div>

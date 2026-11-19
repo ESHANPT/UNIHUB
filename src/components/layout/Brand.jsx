@@ -1,16 +1,19 @@
 import { GraduationCap } from 'lucide-react';
+import { cn } from '../../lib/utils';
 
-export default function Brand({ compact = false }) {
+export default function Brand({ compact = false, className }) {
   return (
-    <div className="flex items-center gap-3">
-      <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-gradient-to-br from-brand to-brand-strong text-white shadow-[0_12px_22px_-12px_var(--brand)]">
-        <GraduationCap className="h-5 w-5" aria-hidden="true" />
+    <div className={cn('flex items-center gap-3', className)}>
+      <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-md bg-surface-inset shadow-inset-1 border border-hairline text-accent">
+        <GraduationCap className="h-5 w-5 stroke-[1.5]" aria-hidden="true" />
       </div>
       <div className="leading-tight">
-        <p className="text-base font-bold tracking-tight">
-          UniHub<span className="text-brand">.</span>
+        <p className="text-lg font-serif tracking-tight text-text">
+          UniHub<span className="text-accent font-sans">.</span>
         </p>
-        {!compact ? <p className="text-[11px] font-medium text-muted">Student dashboard</p> : null}
+        {!compact && (
+          <p className="text-[11px] font-sans text-text-3 tracking-normal">Student dashboard</p>
+        )}
       </div>
     </div>
   );

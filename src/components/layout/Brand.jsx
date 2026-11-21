@@ -12,7 +12,7 @@ export default function Brand({ compact = false, className }) {
           UniHub<span className="text-accent font-sans">.</span>
         </p>
         {!compact && (
-          <p className="text-[11px] font-sans text-text-3 tracking-normal">Student dashboard</p>
+          <p className="text-xs font-sans text-text-3 tracking-normal">Student dashboard</p>
         )}
       </div>
     </div>

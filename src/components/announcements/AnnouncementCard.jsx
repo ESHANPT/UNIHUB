@@ -25,7 +25,7 @@ export default function AnnouncementCard({ announcement, onEdit, onDelete, onTog
         <div className="flex items-start justify-between gap-3">
           <div className="flex items-center gap-2.5">
             {/* Author avatar circle raised per DESIGN.md §6 */}
-            <div className="flex h-7 w-7 items-center justify-center rounded-full bg-surface-2 border border-hairline shadow-elev-1 text-[11px] font-semibold text-text">
+            <div className="flex h-7 w-7 items-center justify-center rounded-full bg-surface-2 border border-hairline shadow-elev-1 text-xs font-semibold text-text">
               {initials}
             </div>
             <div>
@@ -38,7 +38,7 @@ export default function AnnouncementCard({ announcement, onEdit, onDelete, onTog
           </div>
 
           <div className="flex items-center gap-2">
-            <span className="text-[11px] font-medium text-text-3 tabular-nums">
+            <span className="text-xs font-medium text-text-3 tabular-nums">
               {formatDate(announcement.publishedAt || announcement.date, { short: true })}
             </span>
 

@@ -11,7 +11,7 @@ import {
   legacyReminderPayload,
   legacyTimetablePayload,
 } from '../../lib/mappers';
-import { downloadJson, toDateInput } from '../../lib/utils';
+import { downloadJson, pluralize, toDateInput } from '../../lib/utils';
 import PageHeader from '../../components/ui/PageHeader';
 import Button from '../../components/ui/Button';
 import Card from '../../components/ui/Card';
@@ -162,17 +162,17 @@ export default function AdminData() {
             <div className="mt-4 grid grid-cols-2 gap-2.5 sm:grid-cols-4">
               {Object.entries(TABLE_LABELS).map(([key, label]) => (
                 <div key={key} className="rounded-md bg-surface-inset shadow-inset-1 border border-hairline/60 p-3">
-                  <p className="text-[10px] font-medium text-text-3">{label}</p>
+                  <p className="text-xs font-medium text-text-3">{label}</p>
                   <p className="mt-1 text-lg font-semibold text-text tabular-nums">{legacyCounts[key]}</p>
                 </div>
               ))}
             </div>
 
             {skippedCompletedReminders > 0 && (
-              <p className="mt-3 flex items-start gap-2 text-[11px] leading-relaxed text-text-3">
+              <p className="mt-3 flex items-start gap-2 text-xs leading-relaxed text-text-3">
                 <Info className="mt-0.5 h-3.5 w-3.5 shrink-0 text-accent stroke-[1.5]" aria-hidden="true" />
                 <span>
-                  {skippedCompletedReminders} completed reminder{skippedCompletedReminders === 1 ? '' : 's'} will be skipped because class reminders are read-only.
+                  {pluralize(skippedCompletedReminders, 'completed reminder')} will be skipped because class reminders are read-only.
                 </span>
               </p>
             )}
@@ -193,7 +193,7 @@ export default function AdminData() {
           <div className="mt-3 grid gap-2.5 sm:grid-cols-2">
             {Object.entries(result).map(([table, counts]) => (
               <div key={table} className="rounded-md bg-surface-inset shadow-inset-1 border border-hairline/60 p-3">
-                <p className="text-[10px] font-medium text-text-3">
+                <p className="text-xs font-medium text-text-3">
                   {TABLE_LABELS[table] ?? table}
                 </p>
                 <p className="mt-1 text-xs tabular-nums">

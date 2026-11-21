@@ -1,7 +1,6 @@
 import { useMemo } from 'react';
 import { Link } from 'react-router-dom';
 import {
-  ArrowRight,
   BellRing,
   CalendarClock,
   CalendarDays,
@@ -18,7 +17,7 @@ import {
   splitReminders,
   upcomingPendingDeadlines,
 } from '../../lib/selectors';
-import { formatDate, formatDateTime, greeting, todayName } from '../../lib/utils';
+import { formatDate, formatDateTime, greeting, pluralize, todayName } from '../../lib/utils';
 import PageHeader from '../../components/ui/PageHeader';
 import StatCard from '../../components/ui/StatCard';
 import Button from '../../components/ui/Button';
@@ -84,13 +83,13 @@ export default function AdminOverview() {
         <StatCard
           label="Class reminders"
           value={reminders.overdue.length + reminders.dueToday.length + reminders.upcoming.length}
-          hint={`${reminders.dueToday.length} due today`}
+          hint={`${pluralize(reminders.dueToday.length, 'reminder')} due today`}
           icon={BellRing}
         />
         <StatCard
           label="Announcements"
           value={announcements.length}
-          hint={drafts ? `${drafts} unpublished draft${drafts === 1 ? '' : 's'}` : 'All published'}
+          hint={drafts ? pluralize(drafts, 'unpublished draft') : 'All published'}
           icon={Megaphone}
         />
       </div>
@@ -101,10 +100,9 @@ export default function AdminOverview() {
             <h2 className="text-sm font-semibold text-text">Next deadlines</h2>
             <Link
               to="/admin/deadlines"
-              className="inline-flex items-center gap-1 text-xs font-medium text-accent hover:underline"
+              className="text-xs font-medium text-text-2 hover:text-text transition-colors"
             >
-              <span>Manage</span>
-              <ArrowRight className="h-3 w-3 stroke-[1.5]" aria-hidden="true" />
+              Manage
             </Link>
           </div>
 
@@ -118,7 +116,7 @@ export default function AdminOverview() {
                 <li key={item.id} className="py-2.5 flex items-center justify-between gap-3 text-xs">
                   <div className="min-w-0 flex-1">
                     <p className="font-medium text-text truncate">{item.title}</p>
-                    <p className="text-[11px] text-text-3 mt-0.5">{item.subject}</p>
+                    <p className="text-xs text-text-3 mt-0.5">{item.subject}</p>
                   </div>
                   <div className="flex items-center gap-2 shrink-0">
                     <PriorityBadge priority={item.priority} />
@@ -135,10 +133,9 @@ export default function AdminOverview() {
             <h2 className="text-sm font-semibold text-text">Recent notices</h2>
             <Link
               to="/admin/announcements"
-              className="inline-flex items-center gap-1 text-xs font-medium text-accent hover:underline"
+              className="text-xs font-medium text-text-2 hover:text-text transition-colors"
             >
-              <span>Manage</span>
-              <ArrowRight className="h-3 w-3 stroke-[1.5]" aria-hidden="true" />
+              Manage
             </Link>
           </div>
 
@@ -152,7 +149,7 @@ export default function AdminOverview() {
                 <li key={item.id} className="py-2.5 flex items-center justify-between gap-3 text-xs">
                   <div className="min-w-0 flex-1">
                     <p className="font-medium text-text truncate">{item.title}</p>
-                    <p className="text-[11px] text-text-3 mt-0.5">
+                    <p className="text-xs text-text-3 mt-0.5">
                       {formatDate(item.publishedAt || item.date, { short: true })}
                     </p>
                   </div>

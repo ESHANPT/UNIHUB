@@ -2,9 +2,9 @@ import { MapPin, Pencil, Trash2, User } from 'lucide-react';
 import { cn, formatTimeRange, subjectColor } from '../../lib/utils';
 import { IconButton } from '../ui/Button';
 
-export default function ClassCard({ entry, onEdit, onDelete, comfortable = false }) {
+export default function ClassCard({ entry, onEdit, onDelete, comfortable = false, allSubjects = [] }) {
   const hasActions = Boolean(onEdit || onDelete);
-  const color = subjectColor(entry.subject);
+  const color = subjectColor(entry.subject, allSubjects);
 
   return (
     <div
@@ -13,12 +13,12 @@ export default function ClassCard({ entry, onEdit, onDelete, comfortable = false
         'hover:-translate-y-0.5 hover:shadow-elev-2 hover:border-accent-line/40'
       )}
       style={{
-        borderLeftWidth: '3.5px',
+        borderLeftWidth: '3px',
         borderLeftColor: color,
       }}
     >
       <div className="flex items-start justify-between gap-1">
-        <p className="text-[11px] font-medium text-text-3 tabular-nums">
+        <p className="text-xs font-medium text-text-3 tabular-nums">
           {formatTimeRange(entry.startTime, entry.endTime)}
         </p>
 
@@ -52,7 +52,7 @@ export default function ClassCard({ entry, onEdit, onDelete, comfortable = false
         {entry.subject}
       </p>
 
-      <div className="mt-1.5 space-y-1 text-[11px] leading-tight text-text-3">
+      <div className="mt-1.5 space-y-1 text-xs leading-tight text-text-3">
         {entry.location && (
           <p className="flex items-start gap-1">
             <MapPin className="mt-px h-3 w-3 shrink-0 stroke-[1.5]" aria-hidden="true" />

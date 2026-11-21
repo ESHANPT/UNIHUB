@@ -27,15 +27,16 @@ export default function ThemeToggle({ variant = 'segmented', className }) {
         label={isDark ? 'Switch to light theme' : 'Switch to dark theme'}
         onClick={() => setTheme(isDark ? 'light' : 'dark')}
         variant="raised"
+        size="sm"
         className={className}
       />
     );
   }
 
   const options = [
-    { value: 'dark', label: 'Dark', icon: Moon },
-    { value: 'light', label: 'Light', icon: Sun },
-    { value: 'system', label: 'System', icon: Laptop },
+    { value: 'dark', label: 'Dark theme', icon: Moon },
+    { value: 'light', label: 'Light theme', icon: Sun },
+    { value: 'system', label: 'System theme', icon: Laptop },
   ];
 
   return (
@@ -43,7 +44,7 @@ export default function ThemeToggle({ variant = 'segmented', className }) {
       role="radiogroup"
       aria-label="Theme preference"
       className={cn(
-        'relative inline-flex items-center gap-1 p-1 rounded-md bg-surface-inset shadow-inset-1 border border-hairline/60',
+        'relative inline-flex items-center gap-0.5 p-0.5 rounded-md bg-surface-inset shadow-inset-1 border border-hairline/60',
         className
       )}
     >
@@ -57,17 +58,18 @@ export default function ThemeToggle({ variant = 'segmented', className }) {
             type="button"
             role="radio"
             aria-checked={isSelected}
+            aria-label={option.label}
+            title={option.label}
             onClick={() => setTheme(option.value)}
             className={cn(
-              'relative z-10 flex items-center justify-center gap-1.5 h-7 px-2.5 rounded-[9px] text-xs font-medium transition-colors duration-fast select-none cursor-pointer',
-              isSelected ? 'text-text' : 'text-text-3 hover:text-text-2'
+              'relative z-10 flex items-center justify-center w-7 h-7 rounded-[7px] transition-colors duration-fast select-none cursor-pointer',
+              isSelected ? 'text-text' : 'text-text-3 hover:text-text'
             )}
-            title={option.label}
           >
             {isSelected && (
               <motion.div
                 layoutId="theme-toggle-pill"
-                className="absolute inset-0 rounded-[9px] bg-surface shadow-elev-1 border border-hairline z-[-1]"
+                className="absolute inset-0 rounded-[7px] bg-surface shadow-elev-1 border border-hairline z-[-1]"
                 transition={{
                   type: 'spring',
                   stiffness: 450,
@@ -76,7 +78,6 @@ export default function ThemeToggle({ variant = 'segmented', className }) {
               />
             )}
             <Icon className="h-3.5 w-3.5 stroke-[1.5]" aria-hidden="true" />
-            <span className="hidden sm:inline">{option.label}</span>
           </button>
         );
       })}

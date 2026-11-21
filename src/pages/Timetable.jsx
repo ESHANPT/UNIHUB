@@ -8,6 +8,7 @@ import {
   cn,
   formatHours,
   minutesFromTime,
+  pluralize,
   todayName,
 } from '../lib/utils';
 import PageHeader from '../components/ui/PageHeader';
@@ -22,6 +23,8 @@ export default function Timetable() {
   const { data, loading, error, refresh } = useClassData();
   const today = todayName();
   const [selectedDay, setSelectedDay] = useState(today);
+
+  const allSubjects = useMemo(() => [...new Set(data.classes.map((c) => c.subject))].sort(), [data.classes]);
 
   const totalMinutes = useMemo(
     () =>
@@ -82,7 +85,7 @@ export default function Timetable() {
           label="Busiest day"
           value={busiest.count > 0 ? busiest.day : '—'}
           icon={Zap}
-          hint={busiest.count > 0 ? `${busiest.count} classes scheduled` : 'No classes scheduled'}
+          hint={busiest.count > 0 ? `${pluralize(busiest.count, 'class', 'classes')} scheduled` : 'No classes scheduled'}
         />
       </div>
 
@@ -117,7 +120,7 @@ export default function Timetable() {
                     <span className="text-xs font-semibold">{DAYS_SHORT[index]}</span>
                     <span
                       className={cn(
-                        'text-[10px] tabular-nums font-medium',
+                        'text-xs tabular-nums font-medium',
                         isSelected ? 'text-accent' : isToday ? 'text-text font-bold' : 'text-text-3'
                       )}
                     >
@@ -135,7 +138,7 @@ export default function Timetable() {
                   <p className="text-xs text-text-3 tabular-nums">
                     {selectedClasses.length === 0
                       ? 'No classes'
-                      : `${selectedClasses.length} class${selectedClasses.length === 1 ? '' : 'es'}`}
+                      : pluralize(selectedClasses.length, 'class', 'classes')}
                   </p>
                 </div>
                 {selectedDay === today && <Badge tone="accent">Today</Badge>}
@@ -148,7 +151,7 @@ export default function Timetable() {
               ) : (
                 <div className="space-y-2.5">
                   {selectedClasses.map((entry) => (
-                    <ClassCard key={entry.id} entry={entry} comfortable />
+                    <ClassCard key={entry.id} entry={entry} comfortable allSubjects={allSubjects} />
                   ))}
                 </div>
               )}
@@ -162,7 +165,7 @@ export default function Timetable() {
               <div className="flex items-center gap-2 text-xs text-text-3">
                 <span>Today:</span>
                 <span className="font-medium text-text">{today}</span>
-                <span className="tabular-nums font-medium">({todayClasses.length} classes)</span>
+                <span className="tabular-nums font-medium">({pluralize(todayClasses.length, 'class', 'classes')})</span>
               </div>
             </div>
 
@@ -200,18 +203,20 @@ export default function Timetable() {
                           </span>
                           {isToday && <span className="h-1.5 w-1.5 rounded-full bg-accent" />}
                         </div>
-                        <span className="text-[10px] tabular-nums text-text-3 font-medium">
+                        <span className="text-xs tabular-nums text-text-3 font-medium">
                           {entries.length}
                         </span>
                       </div>
 
                       <div className="flex flex-col gap-2">
                         {entries.length === 0 ? (
-                          <div className="rounded border border-dashed border-hairline py-5 text-center text-[10px] text-text-3">
+                          <div className="rounded border border-dashed border-hairline py-5 text-center text-xs text-text-3">
                             Free
                           </div>
                         ) : (
-                          entries.map((entry) => <ClassCard key={entry.id} entry={entry} />)
+                          entries.map((entry) => (
+                            <ClassCard key={entry.id} entry={entry} allSubjects={allSubjects} />
+                          ))
                         )}
                       </div>
                     </div>

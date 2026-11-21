@@ -29,11 +29,11 @@ export default function Sidebar() {
       </div>
 
       <div className="mt-8 px-2.5">
-        <p className="text-[11px] font-medium text-text-3">Workspace</p>
+        <p className="text-xs font-medium text-text-3">Workspace</p>
       </div>
 
-      {/* Inset nav well */}
-      <nav className="mt-2.5 flex flex-1 flex-col gap-1 p-1.5 rounded-lg bg-surface-inset shadow-inset-1 border border-hairline/60" aria-label="Main navigation">
+      {/* Inset nav well — hugs content instead of stretching (DESIGN.md §4) */}
+      <nav className="mt-2.5 flex flex-col gap-1 p-1.5 rounded-lg bg-surface-inset shadow-inset-1 border border-hairline/60" aria-label="Main navigation">
         {NAV_ITEMS.map((item) => {
           const count = item.badge ? counts[item.badge] : 0;
           return (
@@ -77,7 +77,7 @@ export default function Sidebar() {
                   {count > 0 && (
                     <span
                       className={cn(
-                        'rounded-full px-2 py-0.5 text-[11px] tabular-nums font-medium',
+                        'rounded-full px-2 py-0.5 text-xs tabular-nums font-medium',
                         isActive
                           ? 'bg-surface-inset text-accent border border-accent-line/30'
                           : 'bg-surface/80 text-text-3 border border-hairline'
@@ -129,8 +129,8 @@ export default function Sidebar() {
         </NavLink>
       </nav>
 
-      {/* Footer modules */}
-      <div className="space-y-3 pt-4">
+      {/* Footer modules anchored to bottom */}
+      <div className="space-y-3 pt-4 mt-auto">
         {canInstall && (
           <button
             type="button"
@@ -141,23 +141,23 @@ export default function Sidebar() {
               <Download className="h-3.5 w-3.5 text-accent stroke-[1.5]" aria-hidden="true" />
               <span>Install app</span>
             </span>
-            <span className="rounded px-1.5 py-0.5 text-[10px] bg-accent-soft text-accent">UniHub</span>
+            <span className="rounded px-1.5 py-0.5 text-xs bg-accent-soft text-accent">UniHub</span>
           </button>
         )}
 
-        {/* Theme toggle module */}
+        {/* Compact Theme toggle module */}
         <div className="flex items-center justify-between rounded-md bg-surface-inset shadow-inset-1 border border-hairline/60 p-2.5">
           <span className="text-xs text-text-2 font-medium">Appearance</span>
           <ThemeToggle />
         </div>
 
-        {/* Calm feed status note */}
+        {/* Calm feed status note — single presence */}
         <div className="rounded-md bg-surface/60 border border-hairline p-3">
           <p className="flex items-center gap-1.5 text-xs font-medium text-text">
             <Sparkles className="h-3.5 w-3.5 text-accent stroke-[1.5]" aria-hidden="true" />
             Class network
           </p>
-          <p className="mt-1 text-[11px] leading-relaxed text-text-3">
+          <p className="mt-1 text-xs leading-relaxed text-text-3">
             Read-only feed. Class updates sync automatically.
           </p>
         </div>

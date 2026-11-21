@@ -17,7 +17,7 @@ export default function MobileNav() {
             end={item.end}
             className={({ isActive }) =>
               cn(
-                'relative flex min-h-[44px] flex-col items-center justify-center py-1.5 text-[10px] font-medium transition-colors duration-fast rounded-lg',
+                'relative flex min-h-[44px] flex-col items-center justify-center py-1.5 text-xs font-medium transition-colors duration-fast rounded-lg',
                 isActive ? 'text-accent font-semibold' : 'text-text-3 hover:text-text-2'
               )
             }
@@ -25,7 +25,7 @@ export default function MobileNav() {
             {({ isActive }) => (
               <>
                 <item.icon className="h-5 w-5 stroke-[1.5]" aria-hidden="true" />
-                <span className="mt-0.5 text-[9px] truncate tracking-tight">{item.short}</span>
+                <span className="mt-0.5 text-xs truncate tracking-tight">{item.short}</span>
                 {isActive && (
                   <motion.span
                     layoutId="mobile-dock-dot"

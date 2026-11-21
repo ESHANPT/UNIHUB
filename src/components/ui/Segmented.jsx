@@ -58,7 +58,7 @@ export function Segmented({
             {typeof option.count === 'number' && (
               <span
                 className={cn(
-                  'rounded-full px-1.5 py-0.2 text-[10px] tabular-nums font-semibold',
+                  'rounded-full px-1.5 py-0.2 text-xs tabular-nums font-semibold',
                   isSelected ? 'bg-surface-inset text-accent' : 'bg-surface-inset/60 text-text-3'
                 )}
               >

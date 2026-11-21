@@ -43,7 +43,7 @@ export default function PwaInstallCard() {
         {isInstalled ? (
           <div className="rounded-md bg-surface-inset shadow-inset-1 border border-hairline/60 p-4 text-xs text-text-2">
             <p className="font-medium text-text">UniHub is running in standalone mode.</p>
-            <p className="mt-0.5 text-[11px] text-text-3">
+            <p className="mt-0.5 text-xs text-text-3">
               Full-screen layout and cached offline assets are enabled.
             </p>
           </div>
@@ -51,7 +51,7 @@ export default function PwaInstallCard() {
           <div className="flex flex-col gap-3.5 rounded-md bg-surface-inset shadow-inset-1 border border-hairline/60 p-4 sm:flex-row sm:items-center sm:justify-between">
             <div>
               <p className="text-xs font-semibold text-text">Install on this device</p>
-              <p className="mt-0.5 text-[11px] text-text-3">
+              <p className="mt-0.5 text-xs text-text-3">
                 Add UniHub to your home screen or desktop for rapid access.
               </p>
             </div>
@@ -65,7 +65,7 @@ export default function PwaInstallCard() {
               <Share className="h-3.5 w-3.5 text-accent stroke-[1.5]" aria-hidden="true" />
               Installation on iOS / Safari
             </p>
-            <p className="mt-1 text-[11px] leading-relaxed text-text-2">
+            <p className="mt-1 text-xs leading-relaxed text-text-2">
               1. Tap the Share button in Safari.<br />
               2. Scroll down and select Add to Home Screen.<br />
               3. Tap Add to complete setup.
@@ -74,7 +74,7 @@ export default function PwaInstallCard() {
         ) : (
           <div className="rounded-md bg-surface-inset shadow-inset-1 border border-hairline/60 p-4 text-xs text-text-3">
             <p className="font-medium text-text">Browser web application</p>
-            <p className="mt-0.5 text-[11px] leading-relaxed">
+            <p className="mt-0.5 text-xs leading-relaxed">
               You are viewing UniHub in a supported browser. App installation prompts appear automatically when supported by your platform.
             </p>
           </div>

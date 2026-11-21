@@ -41,7 +41,7 @@ export function PriorityBadge({ priority, className }) {
   const config = {
     High: { tone: 'danger', label: 'High' },
     Medium: { tone: 'warning', label: 'Medium' },
-    Low: { tone: 'success', label: 'Low' },
+    Low: { tone: 'neutral', label: 'Low' },
   }[priority] || { tone: 'neutral', label: priority };
 
   return (
@@ -52,16 +52,17 @@ export function PriorityBadge({ priority, className }) {
 }
 
 export function CategoryBadge({ category, dot = true, className }) {
+  // Neutral badges unless carrying urgency per DESIGN.md §7 & requirement 3
   const config = {
-    Assignment: { tone: 'info' },
-    Quiz: { tone: 'accent' },
     Exam: { tone: 'danger' },
-    Project: { tone: 'warning' },
+    Important: { tone: 'danger' },
+    Assignment: { tone: 'neutral' },
+    Quiz: { tone: 'neutral' },
+    Project: { tone: 'neutral' },
     Other: { tone: 'neutral' },
     General: { tone: 'neutral' },
-    Academic: { tone: 'info' },
-    Important: { tone: 'danger' },
-    Event: { tone: 'accent' },
+    Academic: { tone: 'neutral' },
+    Event: { tone: 'neutral' },
   }[category] || { tone: 'neutral' };
 
   return (

@@ -28,7 +28,7 @@ export default function DeadlineCard({ deadline, now, onEdit, onDelete, onToggle
         'group relative flex flex-col justify-between rounded-lg bg-surface shadow-elev-1 border border-hairline p-4 sm:p-5 transition-all duration-base ease-out',
         'hover:-translate-y-0.5 hover:shadow-elev-2 hover:border-accent-line/40'
       )}
-      style={{ borderLeftWidth: '3.5px', borderLeftColor: barColor }}
+      style={{ borderLeftWidth: '3px', borderLeftColor: barColor }}
     >
       <div className="flex items-start justify-between gap-3">
         <div className="flex items-start gap-3 min-w-0 flex-1">

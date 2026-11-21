@@ -149,7 +149,17 @@ export function getCountdown(value, now = Date.now()) {
   };
 }
 
-export function subjectColor(name = '') {
+export function pluralize(count, singular, plural = singular + 's') {
+  return `${count} ${count === 1 ? singular : plural}`;
+}
+
+export function subjectColor(name = '', allSubjects = []) {
+  if (Array.isArray(allSubjects) && allSubjects.length > 0) {
+    const idx = allSubjects.indexOf(name);
+    if (idx !== -1) {
+      return SUBJECT_COLORS[idx % SUBJECT_COLORS.length];
+    }
+  }
   let hash = 0;
   for (let index = 0; index < name.length; index += 1) {
     hash = (hash * 31 + name.charCodeAt(index)) % 100000;

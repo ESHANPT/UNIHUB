@@ -73,7 +73,7 @@ export default function Settings() {
                 >
                   <Icon className={cn('h-4 w-4 stroke-[1.5]', active ? 'text-accent' : 'text-text-3')} />
                   <span className="text-xs font-semibold">{option.label}</span>
-                  <span className="text-[10px] text-text-3 leading-tight">{option.hint}</span>
+                  <span className="text-xs text-text-3 leading-tight">{option.hint}</span>
                 </button>
               );
             })}
@@ -102,7 +102,7 @@ export default function Settings() {
             )}
           </div>
 
-          <p className="mt-4 rounded-md bg-surface-inset shadow-inset-1 border border-hairline/60 p-3 text-[11px] leading-relaxed text-text-3">
+          <p className="mt-4 rounded-md bg-surface-inset shadow-inset-1 border border-hairline/60 p-3 text-xs leading-relaxed text-text-3">
             Background push delivery requires an active service worker and supported mobile device. Reminders always appear inside the app interface.
           </p>
         </Card>

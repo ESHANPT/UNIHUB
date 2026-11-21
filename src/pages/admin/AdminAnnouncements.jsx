@@ -4,7 +4,7 @@ import { useClassData } from '../../store/ClassDataContext';
 import { useToast } from '../../components/ui/Toast';
 import { useConfirm } from '../../components/ui/Confirm';
 import { sortAnnouncements } from '../../lib/selectors';
-import { ANNOUNCEMENT_CATEGORIES } from '../../lib/utils';
+import { ANNOUNCEMENT_CATEGORIES, pluralize } from '../../lib/utils';
 import PageHeader from '../../components/ui/PageHeader';
 import Button from '../../components/ui/Button';
 import Modal from '../../components/ui/Modal';
@@ -90,7 +90,7 @@ export default function AdminAnnouncements() {
     <div className="animate-rise">
       <PageHeader
         title="Announcement management"
-        subtitle={`${data.announcements.length} notices · ${draftCount} draft${draftCount === 1 ? '' : 's'}`}
+        subtitle={`${pluralize(data.announcements.length, 'notice')} · ${pluralize(draftCount, 'draft')}`}
         actions={
           <>
             <Button variant="secondary" size="sm" icon={RefreshCw} onClick={refresh}>

@@ -19,8 +19,8 @@
 
   /* Text */
   --text:            #ECE8E0;  /* warm off-white */
-  --text-2:          #A9A59C;  /* secondary */
-  --text-3:          #6E6B65;  /* tertiary / disabled (decorative only) */
+  --text-2:          #A9A59C;  /* secondary (7:1+ contrast) */
+  --text-3:          #969288;  /* tertiary (5.5:1+ WCAG AA contrast) */
 
   /* Accent: champagne brass (<5% of any screen) */
   --accent:          #C8A96B;
@@ -67,7 +67,7 @@ html:not(.dark):not([data-theme="dark"]) {
 
   --text:            #1E1C18;
   --text-2:          #5B574F;
-  --text-3:          #8D887E;
+  --text-3:          #5E5A51;
 
   --accent:          #8A6A2B;
   --accent-hover:    #755822;

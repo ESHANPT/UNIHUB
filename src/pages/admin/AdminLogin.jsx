@@ -111,7 +111,7 @@ export default function AdminLogin() {
             )}
           </div>
 
-          <div className="mt-6 flex items-start gap-2 rounded-md bg-surface-inset shadow-inset-1 border border-hairline/60 p-3 text-[11px] leading-relaxed text-text-3">
+          <div className="mt-6 flex items-start gap-2 rounded-md bg-surface-inset shadow-inset-1 border border-hairline/60 p-3 text-xs leading-relaxed text-text-3">
             <ShieldCheck className="mt-0.5 h-3.5 w-3.5 shrink-0 text-accent stroke-[1.5]" aria-hidden="true" />
             <span>Administrator access is verified against Supabase allowlist and protected by Row Level Security.</span>
           </div>

@@ -11,6 +11,7 @@ import {
   formatHours,
   formatTimeRange,
   minutesFromTime,
+  pluralize,
   todayName,
 } from '../../lib/utils';
 import PageHeader from '../../components/ui/PageHeader';
@@ -131,7 +132,7 @@ export default function AdminTimetable() {
           label="Busiest day"
           value={busiest.count > 0 ? busiest.day : '—'}
           icon={Zap}
-          hint={busiest.count > 0 ? `${busiest.count} classes` : 'No classes scheduled'}
+          hint={busiest.count > 0 ? pluralize(busiest.count, 'class', 'classes') : 'No classes scheduled'}
         />
       </div>
 
@@ -170,7 +171,7 @@ export default function AdminTimetable() {
                     <span className="text-xs font-semibold">{DAYS_SHORT[index]}</span>
                     <span
                       className={cn(
-                        'text-[10px] tabular-nums font-medium',
+                        'text-xs tabular-nums font-medium',
                         isSelected ? 'text-accent' : isToday ? 'text-text font-bold' : 'text-text-3'
                       )}
                     >
@@ -188,7 +189,7 @@ export default function AdminTimetable() {
                   <p className="text-xs text-text-3 tabular-nums">
                     {selectedClasses.length === 0
                       ? 'No classes'
-                      : `${selectedClasses.length} class${selectedClasses.length === 1 ? '' : 'es'}`}
+                      : pluralize(selectedClasses.length, 'class', 'classes')}
                   </p>
                 </div>
                 <div className="flex items-center gap-2">
@@ -254,7 +255,7 @@ export default function AdminTimetable() {
                           {isToday ? <span className="h-1.5 w-1.5 rounded-full bg-accent" aria-label="Today" /> : null}
                         </div>
                         <div className="flex items-center gap-1">
-                          <span className="text-[10px] tabular-nums text-text-3 font-medium">{entries.length}</span>
+                          <span className="text-xs tabular-nums text-text-3 font-medium">{entries.length}</span>
                           <button
                             type="button"
                             onClick={() => openCreate(day)}
@@ -268,7 +269,7 @@ export default function AdminTimetable() {
 
                       <div className="flex flex-col gap-2">
                         {entries.length === 0 ? (
-                          <div className="rounded border border-dashed border-hairline py-5 text-center text-[10px] text-text-3">
+                          <div className="rounded border border-dashed border-hairline py-5 text-center text-xs text-text-3">
                             Free
                           </div>
                         ) : (
